@@ -12,809 +12,1497 @@
   <title>Configurateur PC</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-  <style>
-    :root {
-      --primary-color: #0a1929;
-      --secondary-color: #1e88e5;
-      --accent-color: #00e5ff;
-      --background-color: #0d1117;
-      --text-color: #e0e0e0;
-      --card-bg: rgba(30, 41, 59, 0.8);
-      --sidebar-bg: #1a2332;
-    }
-  
-    body {
-      font-family: 'Poppins', sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: var(--background-color);
-      color: var(--text-color);
-      transition: background-color 0.3s, color 0.3s;
-    }
-  
-    .container {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 0 20px;
-    }
-  
-    header {
-      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-      border-bottom: 2px solid var(--accent-color);
-      backdrop-filter: blur(10px);
-      color: white;
-      padding: 1rem 0;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-  
-    .header-content {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-  
-    h1 {
-      font-family: 'Roboto', sans-serif;
-      font-weight: 700;
-      font-size: 2.5rem;
-      margin: 0;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-    }
-  
-    .header-icon {
-      font-size: 2.5rem;
-      margin-right: 1rem;
-      color: var(--accent-color);
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-    }
-  
-    .progress-bar {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      backdrop-filter: blur(5px);
-      height: 5px;
-      margin-top: 1rem;
-    }
-  
-    .progress {
-      height: 100%;
-      background: linear-gradient(90deg, var(--accent-color), #80deea);
-      box-shadow: 0 0 20px var(--accent-color);
-      animation: pulse 2s infinite;
-      transition: width 0.3s ease-in-out;
-      width: 0%;
-    }
-  
-    .progress-steps {
-      display: flex;
-      justify-content: space-between;
-      padding: 1rem 0;
-      background-color: var(--sidebar-bg);
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-  
-    .progress-step {
-      display: flex;
-      align-items: center;
-      color: #bdc3c7;
-      font-size: 0.9rem;
-      transition: color 0.3s;
-    }
-  
-    .progress-step i {
-      margin-right: 0.5rem;
-      font-size: 1.2rem;
-      transition: color 0.3s;
-    }
-  
-    .progress-step.completed {
-      color: var(--accent-color);
-    }
-  
-    .progress-step.completed i {
-      color: var(--accent-color);
-    }
-  
-    nav {
-      background-color: var(--sidebar-bg);
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-  
-    .nav-tabs {
-      display: flex;
-      list-style-type: none;
-      padding: 0;
-      margin: 0;
-      overflow-x: auto;
-    }
-  
-    .nav-tabs li {
-      flex: 1;
-      text-align: center;
-    }
-  
-    .nav-tabs a {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 1rem;
-      text-decoration: none;
-      color: #bdc3c7;
-      transition: all 0.3s ease;
-      font-family: 'Roboto', sans-serif;
-      font-weight: 500;
-      position: relative;
-      overflow: hidden;
-    }
-  
-    .nav-tabs a i {
-      font-size: 1.5rem;
-      margin-bottom: 0.5rem;
-      transition: color 0.3s;
-    }
-  
-    .nav-tabs a:hover, .nav-tabs a.active {
-      background: linear-gradient(135deg, rgba(30, 136, 229, 0.2), rgba(0, 229, 255, 0.2));
-      border-color: var(--accent-color);
-      box-shadow: 0 4px 15px rgba(0, 229, 255, 0.1);
-      color: white;
-    }
-  
-    .nav-tabs a:hover::after,
-    .nav-tabs a.active::after {
-      width: 100%;
-    }
-  
-    .nav-tabs a::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 50%;
-      width: 0;
-      height: 2px;
-      background: var(--accent-color);
-      transition: 0.3s;
-      transform: translateX(-50%);
-    }
-  
-    main {
-      display: flex;
-      padding: 2rem 0;
-    }
-  
-    .component-list {
-      flex: 3;
-      margin-right: 2rem;
-    }
-  
-    .filters {
-      background-color: var(--card-bg);
-      padding: 1.5rem;
-      border-radius: 1rem;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-      margin-bottom: 2rem;
-    }
-  
-    .search-bar {
-      width: 100%;
-      padding: 0.75rem 1rem;
-      margin-bottom: 1rem;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 50px;
-      font-size: 1rem;
-      background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(17, 25, 40, 0.9));
-      color: var(--text-color);
-      backdrop-filter: blur(5px);
-      box-shadow: 0 0 15px rgba(0, 229, 255, 0.1);
-      transition: border-color 0.3s, box-shadow 0.3s;
-    }
-  
-    .search-bar:focus {
-      outline: none;
-      border-color: var(--accent-color);
-      box-shadow: 0 0 15px rgba(0, 229, 255, 0.2);
-    }
-  
-    .filter-options, .sort-options {
-      display: flex;
-      gap: 1rem;
-      margin-bottom: 1rem;
-    }
-  
-    .filter-options select, .sort-options select {
-      padding: 0.5rem 1rem;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 5px;
-      font-size: 1rem;
-      background: rgba(30, 41, 59, 0.8);
-      color: var(--text-color);
-      backdrop-filter: blur(5px);
-      cursor: pointer;
-      transition: border-color 0.3s, box-shadow 0.3s;
-    }
-  
-    .filter-options select:focus, .sort-options select:focus {
-      outline: none;
-      border-color: var(--accent-color);
-      box-shadow: 0 0 15px rgba(0, 229, 255, 0.2);
-    }
-  
-    .components-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 2rem;
-    }
-  
-    .component-card {
-      background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(17, 25, 40, 0.95));
-      border: 1px solid rgba(0, 229, 255, 0.2);
-      backdrop-filter: blur(12px);
-      box-shadow: 0 8px 32px rgba(0, 229, 255, 0.1);
-      padding: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      overflow: hidden;
-    }
-  
-    .component-card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 0 25px rgba(0, 229, 255, 0.3);
-      border-color: var(--accent-color);
-    }
-  
-    .component-card img {
-      width: 100%;
-      height: 200px;
-      object-fit: contain;
-      margin-bottom: 1rem;
-      transition: transform 0.3s;
-    }
-  
-    .component-card:hover img {
-      transform: scale(1.05);
-    }
-  
-    .component-card h3 {
-      font-family: 'Roboto', sans-serif;
-      font-weight: 700;
-      font-size: 1.25rem;
-      margin: 0 0 0.75rem 0;
-      color: var(--accent-color);
-    }
-  
-    .component-card ul {
-      list-style-type: none;
-      padding: 0;
-      margin: 0 0 1rem 0;
-    }
-  
-    .component-card li {
-      display: flex;
-      align-items: center;
-      margin-bottom: 0.5rem;
-      font-size: 0.9rem;
-    }
-  
-    .component-card li i {
-      margin-right: 0.5rem;
-      color: var(--secondary-color);
-    }
-  
-    .component-card .price {
-      font-family: 'Roboto', sans-serif;
-      font-weight: 700;
-      font-size: 1.5rem;
-      color: var(--accent-color);
-      margin-bottom: 1rem;
-    }
-  
-    .component-card .buttons {
-      display: flex;
-      justify-content: space-between;
-      margin-top: auto;
-    }
-  
-    .component-card button {
-      flex: 1;
-      background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(5px);
-      color: white;
-      padding: 0.75rem;
-      border-radius: 50px;
-      cursor: pointer;
-      font-family: 'Roboto', sans-serif;
-      font-weight: 700;
-      font-size: 0.9rem;
-      transition: all 0.3s ease;
-      text-transform: uppercase;
-      position: relative;
-      overflow: hidden;
-    }
-  
-    .component-card button::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-      transition: 0.5s;
-    }
-  
-    .component-card button:hover::before {
-      left: 100%;
-    }
-  
-    .component-card button:hover {
-      box-shadow: 0 4px 20px rgba(0, 229, 255, 0.4);
-      transform: translateY(-2px);
-    }
-  
-    .configuration-summary {
-      flex: 1;
-      padding: 1.5rem;
-      background: linear-gradient(135deg, rgba(26, 35, 50, 0.95), rgba(17, 25, 40, 0.95));
-      border: 1px solid rgba(0, 229, 255, 0.2);
-      backdrop-filter: blur(12px);
-      color: white;
-      border-radius: 1rem;
-      position: sticky;
-      top: 2rem;
-      align-self: flex-start;
-      max-height: calc(100vh - 4rem);
-      overflow-y: auto;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    }
-  
-    .configuration-summary h2 {
-      font-family: 'Roboto', sans-serif;
-      font-weight: 700;
-      font-size: 1.5rem;
-      margin-top: 0;
-      margin-bottom: 1.5rem;
-      color: var(--accent-color);
-    }
-  
-    .selected-components {
-      list-style-type: none;
-      padding: 0;
-    }
-  
-    .selected-components li {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-      padding: 0.75rem;
-      border-radius: 8px;
-      transition: all 0.3s ease;
-    }
-  
-    .selected-components li:hover {
-      background: rgba(0, 229, 255, 0.1);
-      transform: translateX(5px);
-    }
-  
-    .selected-components li:last-child {
-      border-bottom: none;
-    }
-  
-    .selected-components li i {
-      margin-right: 0.75rem;
-      color: var(--secondary-color);
-    }
-  
-    .total-price {
-      font-family: 'Roboto', sans-serif;
-      font-weight: 700;
-      font-size: 1.5rem;
-      margin-top: 1.5rem;
-      padding-top: 1.5rem;
-      border-top: 2px solid rgba(255, 255, 255, 0.1);
-      color: var(--accent-color);
-    }
-  
-    .summary-buttons {
-      display: flex;
-      gap: 1rem;
-      margin-top: 1.5rem;
-    }
-  
-    .summary-buttons button {
-      flex: 1;
-      padding: 0.75rem;
-      border: none;
-      border-radius: 50px;
-      cursor: pointer;
-      font-family: 'Roboto', sans-serif;
-      font-weight: 700;
-      font-size: 1rem;
-      transition: all 0.3s ease;
-      text-transform: uppercase;
-    }
-  
-    .summary-buttons button:first-child {
-      background-color: var(--secondary-color);
-      color: white;
-    }
-  
-    .summary-buttons button:last-child {
-      background-color: var(--accent-color);
-      color: white;
-    }
-  
-    .summary-buttons button:hover {
-      transform: translateY(-2px);
-    }
-  
-    #budget-chart {
-      width: 100%;
-      height: 200px;
-      margin-top: 1.5rem;
-    }
-  
-    .performance-widget {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 1rem;
-      padding: 1.5rem;
-      margin-top: 1.5rem;
-    }
-  
-    .performance-widget h3 {
-      font-size: 1.25rem;
-      margin-top: 0;
-      margin-bottom: 1rem;
-      color: var(--accent-color);
-    }
-  
-    .performance-score {
-      font-size: 3rem;
-      font-weight: 700;
-      text-align: center;
-      margin-bottom: 1rem;
-      color: var(--success-color);
-    }
-  
-    .performance-categories {
-      display: flex;
-      justify-content: space-between;
-    }
-  
-    .performance-category {
-      text-align: center;
-    }
-  
-    .performance-category i {
-      font-size: 2rem;
-      margin-bottom: 0.5rem;
-      color: var(--secondary-color);
-    }
-  
-    .game-fps {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 1rem;
-    }
-  
-    .game-fps img {
-      width: 32px;
-      height: 32px;
-      margin-right: 0.5rem;
-    }
-  
-    .game-fps span {
-      font-weight: 600;
-      color: var(--accent-color);
-    }
-  
-    .summary-3d-view {
-      width: 100%;
-      height: 300px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 1rem;
-      margin-top: 1.5rem;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 1.25rem;
-      color: var(--accent-color);
-    }
-  
-    .summary-actions {
-      display: flex;
-      gap: 1rem;
-      margin-top: 1.5rem;
-    }
-  
-    .summary-actions button {
-      flex: 1;
-      padding: 0.75rem;
-      border: none;
-      border-radius: 50px;
-      cursor: pointer;
-      font-family: 'Roboto', sans-serif;
-      font-weight: 700;
-      font-size: 0.9rem;
-      transition: all 0.3s ease;
-      text-transform: uppercase;
-      color: white;
-    }
-  
-    .summary-actions button:nth-child(1) {
-      background-color: var(--success-color);
-    }
-  
-    .summary-actions button:nth-child(2) {
-      background-color: var(--secondary-color);
-    }
-  
-    .summary-actions button:nth-child(3) {
-      background-color: var(--accent-color);
-    }
-  
-    .summary-actions button:hover {
-      transform: translateY(-2px);
-      filter: brightness(110%);
-    }
-  
-    .financing-calculator {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 1rem;
-      padding: 1.5rem;
-      margin-top: 1.5rem;
-    }
-  
-    .financing-calculator h3 {
-      font-size: 1.25rem;
-      margin-top: 0;
-      margin-bottom: 1rem;
-      color: var(--accent-color);
-    }
-  
-    .financing-calculator input {
-      width: 100%;
-      padding: 0.75rem;
-      margin-bottom: 1rem;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
-      border-radius: 0.5rem;
-      font-size: 1rem;
-    }
-  
-    .financing-calculator button {
-      width: 100%;
-      padding: 0.75rem;
-      background: var(--accent-color);
-      color: white;
-      border: none;
-      border-radius: 0.5rem;
-      cursor: pointer;
-      font-weight: 700;
-      transition: all 0.3s ease;
-      font-size: 1rem;
-    }
-  
-    .financing-calculator button:hover {
-      background: #c0392b;
-      transform: translateY(-2px);
-    }
-  
-    .monthly-payment {
-      font-size: 1.5rem;
-      font-weight: 700;
-      text-align: center;
-      margin-top: 1rem;
-      color: var(--success-color);
-    }
-  
-    .recommendation-section {
-      background: var(--card-bg);
-      border-radius: 1rem;
-      padding: 2rem;
-      margin-top: 2rem;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    }
-  
-    .recommendation-section h3 {
-      font-size: 1.5rem;
-      margin-bottom: 1rem;
-      color: var(--primary-color);
-    }
-  
-    .recommendation-cards {
-      display: flex;
-      gap: 1rem;
-      overflow-x: auto;
-      padding-bottom: 1rem;
-    }
-  
-    .recommendation-card {
-      background: var(--card-bg);
-      border-radius: 1rem;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-      padding: 1rem;
-      width: 200px;
-      flex-shrink: 0;
-      position: relative;
-      transition: all 0.3s ease;
-    }
-  
-    .recommendation-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
-    }
-  
-    .recommendation-badge {
-      position: absolute;
-      top: -10px;
-      right: -10px;
-      background: var(--accent-color);
-      color: white;
-      padding: 5px 10px;
-      border-radius: 20px;
-      font-size: 0.75rem;
-      font-weight: bold;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    }
-  
-    .recommendation-card img {
-      width: 100%;
-      height: 100px;
-      object-fit: contain;
-      margin-bottom: 0.5rem;
-    }
-  
-    .recommendation-card h4 {
-      font-size: 1rem;
-      margin: 0 0 0.5rem 0;
-      color: var(--primary-color);
-    }
-  
-    .recommendation-card p {
-      font-size: 0.9rem;
-      color: var(--text-color);
-      margin: 0;
-    }
-  
-    .theme-selector {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: var(--card-bg);
-      border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-      cursor: pointer;
-      z-index: 1000;
-      transition: background-color 0.3s;
-    }
-  
-    .theme-selector:hover {
-      background: var(--accent-color);
-    }
-  
-    .theme-selector i {
-      font-size: 24px;
-      color: var(--primary-color);
-      transition: color 0.3s;
-    }
-  
-    .theme-selector:hover i {
-      color: white;
-    }
-  
-    .theme-options {
-      position: absolute;
-      bottom: 60px;
-      right: 0;
-      background: var(--card-bg);
-      border-radius: 1rem;
-      padding: 1rem;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-      display: none;
-    }
-  
-    .theme-options.show {
-      display: block;
-    }
-  
-    .theme-option {
-      display: flex;
-      align-items: center;
-      margin-bottom: 0.5rem;
-      cursor: pointer;
-      transition: background-color 0.3s;
-      padding: 0.5rem;
-      border-radius: 0.5rem;
-    }
-  
-    .theme-option:hover {
-      background: rgba(0, 0, 0, 0.05);
-    }
-  
-    .theme-color {
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      margin-right: 0.5rem;
-    }
-  
-    .custom-theme-inputs {
-      margin-top: 1rem;
-    }
-  
-    .custom-theme-inputs input {
-      width: 100%;
-      margin-bottom: 0.5rem;
-      padding: 0.5rem;
-      border: 1px solid var(--primary-color);
-      border-radius: 0.5rem;
-    }
-  
-    @media (max-width: 768px) {
-      .container {
-        padding: 0 10px;
-      }
-  
-      main {
-        flex-direction: column;
-      }
-  
-      .component-list {
-        margin-right: 0;
-        margin-bottom: 2rem;
-      }
-  
-      .configuration-summary {
-        position: static;
-        max-height: none;
-      }
-  
-      .nav-tabs {
-        flex-wrap: nowrap;
-        overflow-x: auto;
-      }
-  
-      .nav-tabs li {
-        flex: 0 0 auto;
-      }
-  
-      .components-grid {
-        grid-template-columns: 1fr;
-      }
-  
-      .component-card {
-        width: 100%;
-      }
-    }
-  
-    @keyframes glow {
-      0% { box-shadow: 0 0 5px var(--accent-color); }
-      50% { box-shadow: 0 0 20px var(--accent-color); }
-      100% { box-shadow: 0 0 5px var(--accent-color); }
-    }
-  
-    @keyframes pulse {
-      0% { box-shadow: 0 0 15px var(--accent-color); }
-      50% { box-shadow: 0 0 25px var(--accent-color); }
-      100% { box-shadow: 0 0 15px var(--accent-color); }
-    }
-  
-    .header-icon, .total-price, .progress {
-      animation: glow 3s infinite;
-    }
-  </style>
+    <style>
+        :root {
+            --primary-color: #0a1929;
+            --secondary-color: #1e88e5;
+            --accent-color: #00e5ff;
+            --background-color: #0d1117;
+            --text-color: #e0e0e0;
+            --card-bg: rgba(30, 41, 59, 0.85);
+            --sidebar-bg: #1a2332;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #17a2b8;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --transition-speed: 0.3s;
+            --font-family-primary: 'Poppins', sans-serif;
+            --font-family-secondary: 'Roboto', sans-serif;
+            --max-width: 1400px;
+            --header-height: 70px;
+            --shadow-color: rgba(0, 229, 255, 0.3);
+            --border-radius: 1.5rem;
+            --nav-hover-bg: rgba(30, 136, 229, 0.2);
+            --nav-active-bg: rgba(0, 229, 255, 0.2);
+            --nav-active-shadow: 0 4px 15px rgba(0, 229, 255, 0.3);
+            --button-hover-bg: #00bcd4;
+            --modal-bg: rgba(255, 255, 255, 0.95);
+            --modal-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            --overlay-bg: rgba(0, 0, 0, 0.6);
+            --transition-ease: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-family-primary);
+            background-color: var(--background-color);
+            color: var(--text-color);
+            transition: background-color var(--transition-speed), color var(--transition-speed);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        a {
+            color: var(--accent-color);
+            text-decoration: none;
+            transition: color var(--transition-speed), transform var(--transition-speed);
+        }
+
+        a:hover {
+            color: var(--secondary-color);
+            transform: scale(1.05);
+        }
+
+        .container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-bottom: 2px solid var(--accent-color);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 1.5rem 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        h1 {
+            font-family: var(--font-family-secondary);
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin: 0;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+            transition: text-shadow var(--transition-speed), transform var(--transition-speed);
+        }
+
+        h1:hover {
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.7);
+            transform: scale(1.02);
+        }
+
+        .header-icon {
+            font-size: 2.5rem;
+            margin-right: 1rem;
+            color: var(--accent-color);
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+            transition: color var(--transition-speed), text-shadow var(--transition-speed), transform var(--transition-speed);
+            cursor: pointer;
+        }
+
+        .header-icon:hover {
+            color: var(--secondary-color);
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.7);
+            transform: rotate(10deg);
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+            height: 6px;
+            margin-top: 1rem;
+            border-radius: 3px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-color), #80deea);
+            box-shadow: 0 0 20px var(--accent-color);
+            animation: pulse 2s infinite;
+            transition: width var(--transition-speed) ease-in-out, box-shadow var(--transition-speed);
+            width: 0%;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 10px var(--accent-color); }
+            50% { box-shadow: 0 0 30px var(--accent-color); }
+            100% { box-shadow: 0 0 10px var(--accent-color); }
+        }
+
+        nav {
+            background-color: var(--sidebar-bg);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            position: sticky;
+            top: calc(var(--header-height) + 1rem);
+            z-index: 999;
+            animation: slideInLeft 0.5s ease-out;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            transition: border-radius var(--transition-speed), box-shadow var(--transition-speed);
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .nav-tabs {
+            display: flex;
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            overflow-x: auto;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-tabs li {
+            flex: 1;
+            text-align: center;
+            transition: background var(--transition-speed);
+        }
+
+        .nav-tabs a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+            text-decoration: none;
+            color: #bdc3c7;
+            transition: all var(--transition-speed) ease;
+            font-family: var(--font-family-secondary);
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .nav-tabs a i {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            transition: color var(--transition-speed), transform var(--transition-speed);
+        }
+
+        .nav-tabs a:hover, .nav-tabs a.active {
+            background: var(--nav-hover-bg);
+            border-color: var(--accent-color);
+            box-shadow: var(--nav-active-shadow);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .nav-tabs a:hover::after,
+        .nav-tabs a.active::after {
+            width: 100%;
+        }
+
+        .nav-tabs a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 3px;
+            background: var(--accent-color);
+            transition: 0.3s;
+            transform: translateX(-50%);
+        }
+
+        main {
+            display: flex;
+            padding: 3rem 0;
+            animation: fadeIn 1s ease-out;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .component-list {
+            flex: 3;
+            margin-right: 2rem;
+            transition: margin var(--transition-speed);
+        }
+
+        .filters {
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            margin-bottom: 2.5rem;
+            transition: background-color var(--transition-speed), box-shadow var(--transition-speed), transform var(--transition-speed);
+        }
+
+        .filters:hover {
+            background-color: rgba(30, 41, 59, 0.9);
+            box-shadow: 0 10px 30px rgba(0, 229, 255, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 0.85rem 1.2rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            font-size: 1.1rem;
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(17, 25, 40, 0.95));
+            color: var(--text-color);
+            backdrop-filter: blur(5px);
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.1);
+            transition: border-color var(--transition-speed), box-shadow var(--transition-speed), transform var(--transition-speed);
+        }
+
+        .search-bar:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
+            transform: scale(1.02);
+        }
+
+        .filter-options, .sort-options {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-options select, .sort-options select {
+            padding: 0.6rem 1.2rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            background: rgba(30, 41, 59, 0.8);
+            color: var(--text-color);
+            backdrop-filter: blur(5px);
+            cursor: pointer;
+            transition: border-color var(--transition-speed), box-shadow var(--transition-speed), transform var(--transition-speed);
+        }
+
+        .filter-options select:focus, .sort-options select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 15px rgba(0, 229, 255, 0.3);
+            transform: scale(1.02);
+        }
+
+        .components-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2.5rem;
+            transition: grid-template-columns var(--transition-speed), gap var(--transition-speed);
+        }
+
+        .component-card {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.95), rgba(17, 25, 40, 0.95));
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 40px rgba(0, 229, 255, 0.2);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            border-radius: var(--border-radius);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s, border-color var(--transition-speed);
+            overflow: hidden;
+        }
+
+        .component-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 0 35px rgba(0, 229, 255, 0.4);
+            border-color: var(--accent-color);
+        }
+
+        .component-card img {
+            width: 100%;
+            height: 220px;
+            object-fit: contain;
+            margin-bottom: 1.5rem;
+            border-radius: 1rem;
+            transition: transform 0.3s ease, filter 0.3s ease;
+        }
+
+        .component-card:hover img {
+            transform: scale(1.05);
+            filter: brightness(1.1);
+        }
+
+        .component-card h3 {
+            font-family: var(--font-family-secondary);
+            font-weight: 700;
+            font-size: 1.5rem;
+            margin: 0 0 1rem 0;
+            color: var(--accent-color);
+            transition: color var(--transition-speed), transform var(--transition-speed);
+        }
+
+        .component-card:hover h3 {
+            color: var(--secondary-color);
+            transform: translateY(-3px);
+        }
+
+        .component-card ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0 0 1.5rem 0;
+        }
+
+        .component-card li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+            color: var(--text-color);
+            transition: color var(--transition-speed), transform var(--transition-speed);
+        }
+
+        .component-card li:hover {
+            color: var(--accent-color);
+            transform: scale(1.02);
+        }
+
+        .component-card li i {
+            margin-right: 0.5rem;
+            color: var(--secondary-color);
+            transition: color var(--transition-speed), transform var(--transition-speed);
+        }
+
+        .component-card li:hover i {
+            color: var(--accent-color);
+            transform: rotate(10deg);
+        }
+
+        .component-card .price {
+            font-family: var(--font-family-secondary);
+            font-weight: 700;
+            font-size: 1.6rem;
+            color: var(--accent-color);
+            margin-bottom: 1.5rem;
+            transition: color var(--transition-speed), transform var(--transition-speed);
+        }
+
+        .component-card:hover .price {
+            color: var(--secondary-color);
+            transform: scale(1.05);
+        }
+
+        .component-card .buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: auto;
+            gap: 0.5rem;
+        }
+
+        .component-card button {
+            flex: 1;
+            background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
+            border: none;
+            backdrop-filter: blur(5px);
+            color: white;
+            padding: 0.85rem 1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: var(--font-family-secondary);
+            font-weight: 700;
+            font-size: 1rem;
+            transition: all var(--transition-speed) ease, transform var(--transition-speed);
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .component-card button:hover::before {
+            left: 100%;
+        }
+
+        .component-card button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .component-card button:hover {
+            box-shadow: 0 4px 20px var(--shadow-color);
+            transform: translateY(-3px);
+        }
+
+        .configuration-summary {
+            flex: 1;
+            padding: 2rem;
+            background: linear-gradient(145deg, rgba(26, 35, 50, 0.95), rgba(17, 25, 40, 0.95));
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            backdrop-filter: blur(12px);
+            color: white;
+            border-radius: var(--border-radius);
+            position: sticky;
+            top: 3rem;
+            align-self: flex-start;
+            max-height: calc(100vh - 6rem);
+            overflow-y: auto;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            transition: background var(--transition-speed), box-shadow var(--transition-speed), transform var(--transition-speed);
+        }
+
+        .configuration-summary:hover {
+            background: linear-gradient(145deg, rgba(26, 35, 50, 0.98), rgba(17, 25, 40, 0.98));
+            box-shadow: 0 10px 30px rgba(0, 229, 255, 0.3);
+            transform: translateY(-5px);
+        }
+
+        .configuration-summary h2 {
+            font-family: var(--font-family-secondary);
+            font-weight: 700;
+            font-size: 1.8rem;
+            margin-bottom: 1.8rem;
+            color: var(--accent-color);
+            text-align: center;
+            transition: color var(--transition-speed), transform var(--transition-speed);
+        }
+
+        .configuration-summary h2:hover {
+            color: var(--secondary-color);
+            transform: scale(1.02);
+        }
+
+        .selected-components {
+            list-style-type: none;
+            padding: 0;
+            margin: 0 0 2rem 0;
+        }
+
+        .selected-components li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.2rem;
+            padding: 0.85rem 1rem;
+            border-radius: 0.75rem;
+            background: rgba(30, 41, 59, 0.7);
+            transition: background var(--transition-speed), transform var(--transition-speed), box-shadow var(--transition-speed);
+        }
+
+        .selected-components li:hover {
+            background: rgba(0, 229, 255, 0.1);
+            transform: translateX(5px);
+            box-shadow: 0 4px 10px rgba(0, 229, 255, 0.2);
+        }
+
+        .selected-components li span {
+            display: flex;
+            align-items: center;
+            font-size: 1.1rem;
+            transition: transform var(--transition-speed);
+        }
+
+        .selected-components li span i {
+            margin-right: 0.6rem;
+            color: var(--secondary-color);
+            transition: color var(--transition-speed), transform var(--transition-speed);
+        }
+
+        .selected-components li span:hover i {
+            color: var(--accent-color);
+            transform: rotate(15deg);
+        }
+
+        .selected-components li .price {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            transition: color var(--transition-speed), transform var(--transition-speed);
+        }
+
+        .selected-components li .price:hover {
+            color: var(--secondary-color);
+            transform: scale(1.05);
+        }
+
+        .selected-components li a {
+            display: inline-block;
+            padding: 0.3rem 0.6rem;
+            background: var(--secondary-color);
+            color: white;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+            transition: background var(--transition-speed), transform var(--transition-speed);
+            text-decoration: none;
+        }
+
+        .selected-components li a:hover {
+            background: var(--accent-color);
+            transform: translateY(-2px);
+        }
+
+        .total-price {
+            font-family: var(--font-family-secondary);
+            font-weight: 700;
+            font-size: 1.8rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1.8rem;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+            color: var(--accent-color);
+            text-align: center;
+            transition: color var(--transition-speed), transform var(--transition-speed);
+        }
+
+        .total-price:hover {
+            color: var(--secondary-color);
+            transform: scale(1.05);
+        }
+
+        .summary-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin-top: 2rem;
+            transition: transform var(--transition-speed);
+        }
+
+        .summary-buttons button {
+            padding: 0.85rem 1rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: var(--font-family-secondary);
+            font-weight: 700;
+            font-size: 1rem;
+            transition: all var(--transition-speed) ease, transform var(--transition-speed);
+            text-transform: uppercase;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .summary-buttons button:first-child {
+            background-color: var(--secondary-color);
+            transition: background-color var(--transition-speed), transform var(--transition-speed);
+        }
+
+        .summary-buttons button:first-child:hover {
+            background-color: var(--accent-color);
+            transform: translateY(-3px);
+        }
+
+        .summary-buttons button:last-child {
+            background-color: var(--accent-color);
+            transition: background-color var(--transition-speed), transform var(--transition-speed);
+        }
+
+        .summary-buttons button:last-child:hover {
+            background-color: var(--button-hover-bg);
+            transform: translateY(-3px);
+        }
+
+        #budget-chart {
+            width: 100%;
+            height: 250px;
+            margin-top: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            padding: 1rem;
+            transition: background var(--transition-speed), transform var(--transition-speed);
+            display: none;
+            box-shadow: 0 4px 10px rgba(0, 229, 255, 0.2);
+        }
+
+        #budget-chart:hover {
+            background: rgba(0, 0, 0, 0.1);
+            transform: scale(1.02);
+        }
+
+        .performance-widget {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin-top: 2rem;
+            transition: background var(--transition-speed), box-shadow var(--transition-speed), transform var(--transition-speed);
+            display: none;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .performance-widget:hover {
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 10px 30px rgba(0, 229, 255, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .performance-widget h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--secondary-color);
+            transition: color var(--transition-speed), transform var(--transition-speed);
+        }
+
+        .performance-widget h3:hover {
+            color: var(--accent-color);
+            transform: scale(1.02);
+        }
+
+        .performance-score {
+            font-size: 3rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: var(--success-color);
+            transition: color var(--transition-speed), transform var(--transition-speed);
+            text-shadow: 2px 2px 10px rgba(0, 229, 255, 0.5);
+        }
+
+        .performance-score:hover {
+            color: var(--secondary-color);
+            transform: scale(1.05);
+        }
+
+        .performance-categories {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            transition: flex-direction var(--transition-speed), gap var(--transition-speed);
+        }
+
+        .performance-category {
+            text-align: center;
+            flex: 1;
+            transition: transform var(--transition-speed), color var(--transition-speed);
+        }
+
+        .performance-category:hover {
+            transform: scale(1.05);
+        }
+
+        .performance-category i {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--secondary-color);
+            transition: color var(--transition-speed), transform var(--transition-speed);
+        }
+
+        .performance-category:hover i {
+            color: var(--accent-color);
+            transform: rotate(10deg);
+        }
+
+        .performance-category p {
+            font-size: 1.1rem;
+            color: var(--text-color);
+            transition: color var(--transition-speed), transform var(--transition-speed);
+        }
+
+        .performance-category p:hover {
+            color: var(--accent-color);
+            transform: translateY(-2px);
+        }
+
+        .game-fps {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            transition: flex-direction var(--transition-speed), gap var(--transition-speed);
+        }
+
+        .game-fps div {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(30, 41, 59, 0.7);
+            padding: 0.75rem 1rem;
+            border-radius: 1rem;
+            transition: background var(--transition-speed), transform var(--transition-speed), box-shadow var(--transition-speed);
+        }
+
+        .game-fps div:hover {
+            background: rgba(0, 229, 255, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(0, 229, 255, 0.3);
+        }
+
+        .game-fps img {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+            border-radius: 50%;
+            background: white;
+            padding: 0.2rem;
+            transition: transform var(--transition-speed);
+        }
+
+        .game-fps img:hover {
+            transform: rotate(15deg);
+        }
+
+        .game-fps span {
+            font-weight: 600;
+            color: var(--accent-color);
+            transition: color var(--transition-speed), transform var(--transition-speed);
+        }
+
+        .game-fps span:hover {
+            color: var(--secondary-color);
+            transform: scale(1.05);
+        }
+
+        .summary-3d-view {
+            width: 100%;
+            height: 350px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius);
+            margin-top: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.3rem;
+            color: var(--accent-color);
+            transition: background var(--transition-speed), transform var(--transition-speed), box-shadow var(--transition-speed);
+            display: none;
+            box-shadow: 0 4px 10px rgba(0, 229, 255, 0.2);
+        }
+
+        .summary-3d-view:hover {
+            background: rgba(0, 0, 0, 0.1);
+            transform: scale(1.02);
+            box-shadow: 0 8px 20px rgba(0, 229, 255, 0.3);
+        }
+
+        .summary-actions {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 2rem;
+            flex-direction: row;
+            transition: flex-direction var(--transition-speed), gap var(--transition-speed);
+            display: none;
+        }
+
+        .summary-actions button {
+            flex: 1;
+            padding: 0.85rem 1rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: var(--font-family-secondary);
+            font-weight: 700;
+            font-size: 1rem;
+            transition: all var(--transition-speed) ease, transform var(--transition-speed);
+            text-transform: uppercase;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .summary-actions button:nth-child(1) {
+            background-color: var(--info-color);
+            transition: background-color var(--transition-speed), transform var(--transition-speed);
+        }
+
+        .summary-actions button:nth-child(1):hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-3px);
+        }
+
+        .summary-actions button:nth-child(2) {
+            background-color: var(--danger-color);
+            transition: background-color var(--transition-speed), transform var(--transition-speed);
+        }
+
+        .summary-actions button:nth-child(2):hover {
+            background-color: #ff6b6b;
+            transform: translateY(-3px);
+        }
+
+        .summary-actions button:nth-child(3) {
+            background-color: var(--success-color);
+            transition: background-color var(--transition-speed), transform var(--transition-speed);
+        }
+
+        .summary-actions button:nth-child(3):hover {
+            background-color: #28a745;
+            transform: translateY(-3px);
+        }
+
+        .financing-calculator {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin-top: 2rem;
+            transition: background var(--transition-speed), box-shadow var(--transition-speed), transform var(--transition-speed);
+            display: none;
+            box-shadow: 0 4px 10px rgba(0, 229, 255, 0.2);
+        }
+
+        .financing-calculator:hover {
+            background: rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 20px rgba(0, 229, 255, 0.3);
+            transform: scale(1.02);
+        }
+
+        .financing-calculator h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--secondary-color);
+            transition: color var(--transition-speed), transform var(--transition-speed);
+        }
+
+        .financing-calculator h3:hover {
+            color: var(--accent-color);
+            transform: scale(1.02);
+        }
+
+        .financing-calculator input {
+            width: 100%;
+            padding: 0.8rem 1.2rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: border-color var(--transition-speed), box-shadow var(--transition-speed), transform var(--transition-speed);
+        }
+
+        .financing-calculator input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
+            transform: scale(1.02);
+        }
+
+        .financing-calculator button {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 700;
+            transition: background var(--transition-speed), transform var(--transition-speed);
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .financing-calculator button:hover {
+            background: #c0392b;
+            transform: translateY(-3px);
+        }
+
+        .monthly-payment {
+            font-size: 1.6rem;
+            font-weight: 700;
+            text-align: center;
+            margin-top: 1.5rem;
+            color: var(--success-color);
+            transition: color var(--transition-speed), transform var(--transition-speed);
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .monthly-payment:hover {
+            color: var(--secondary-color);
+            transform: scale(1.05);
+        }
+
+        .recommendation-section {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin-top: 2.5rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            transition: background var(--transition-speed), box-shadow var(--transition-speed), transform var(--transition-speed);
+            transition-delay: 0.2s;
+        }
+
+        .recommendation-section:hover {
+            background: rgba(30, 41, 59, 0.9);
+            box-shadow: 0 10px 30px rgba(0, 229, 255, 0.3);
+            transform: translateY(-5px);
+        }
+
+        .recommendation-section h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+            text-align: center;
+            transition: color var(--transition-speed), transform var(--transition-speed);
+        }
+
+        .recommendation-section h3:hover {
+            color: var(--accent-color);
+            transform: scale(1.02);
+        }
+
+        .recommendation-cards {
+            display: flex;
+            gap: 1.5rem;
+            overflow-x: auto;
+            padding-bottom: 1.5rem;
+            transition: gap var(--transition-speed);
+        }
+
+        .recommendation-card {
+            background: var(--sidebar-bg);
+            border-radius: var(--border-radius);
+            box-shadow: 0 5px 15px rgba(0, 229, 255, 0.2);
+            padding: 1.5rem;
+            width: 220px;
+            flex-shrink: 0;
+            position: relative;
+            transition: transform var(--transition-speed), box-shadow var(--transition-speed), background var(--transition-speed);
+        }
+
+        .recommendation-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 25px rgba(0, 229, 255, 0.3);
+            background: rgba(26, 35, 50, 0.95);
+        }
+
+        .recommendation-badge {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: var(--accent-color);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: background var(--transition-speed), transform var(--transition-speed);
+            cursor: default;
+        }
+
+        .recommendation-card:hover .recommendation-badge {
+            background: var(--secondary-color);
+            transform: rotate(10deg);
+        }
+
+        .recommendation-card img {
+            width: 100%;
+            height: 120px;
+            object-fit: contain;
+            margin-bottom: 1rem;
+            border-radius: 1rem;
+            transition: transform var(--transition-speed), filter var(--transition-speed);
+        }
+
+        .recommendation-card:hover img {
+            transform: scale(1.05);
+            filter: brightness(1.1);
+        }
+
+        .recommendation-card h4 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+            transition: color var(--transition-speed), transform var(--transition-speed);
+        }
+
+        .recommendation-card:hover h4 {
+            color: var(--accent-color);
+            transform: translateY(-2px);
+        }
+
+        .recommendation-card p {
+            font-size: 1rem;
+            color: var(--text-color);
+            transition: color var(--transition-speed), transform var(--transition-speed);
+        }
+
+        .recommendation-card p:hover {
+            color: var(--accent-color);
+            transform: scale(1.02);
+        }
+
+        .theme-selector {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--card-bg);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            z-index: 1000;
+            transition: background-color var(--transition-speed), box-shadow var(--transition-speed), transform var(--transition-speed);
+        }
+
+        .theme-selector:hover {
+            background: var(--accent-color);
+            box-shadow: 0 10px 30px rgba(0, 229, 255, 0.4);
+            transform: rotate(20deg);
+        }
+
+        .theme-selector i {
+            font-size: 28px;
+            color: var(--primary-color);
+            transition: color var(--transition-speed), transform var(--transition-speed);
+        }
+
+        .theme-selector:hover i {
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .theme-options {
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            display: none;
+            flex-direction: column;
+            gap: 1rem;
+            transition: opacity var(--transition-speed), transform var(--transition-speed);
+        }
+
+        .theme-options.show {
+            display: flex;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .theme-option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: background-color var(--transition-speed), transform var(--transition-speed);
+            padding: 0.5rem 1rem;
+            border-radius: 0.75rem;
+        }
+
+        .theme-option:hover {
+            background: rgba(0, 229, 255, 0.2);
+            transform: scale(1.02);
+        }
+
+        .theme-color {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            margin-right: 0.75rem;
+            border: 2px solid white;
+            transition: transform var(--transition-speed);
+        }
+
+        .theme-option:hover .theme-color {
+            transform: rotate(20deg);
+        }
+
+        .theme-option span {
+            font-size: 1rem;
+            color: var(--text-color);
+            transition: color var(--transition-speed), transform var(--transition-speed);
+        }
+
+        .theme-option:hover span {
+            color: white;
+            transform: translateX(2px);
+        }
+
+        .custom-theme-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            transition: transform var(--transition-speed);
+        }
+
+        .custom-theme-inputs input[type="color"] {
+            width: 100%;
+            height: 40px;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+        }
+
+        .custom-theme-inputs input[type="color"]:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 10px var(--accent-color);
+        }
+
+        @media (max-width: 1024px) {
+            main {
+                flex-direction: column;
+            }
+
+            .component-list {
+                margin-right: 0;
+            }
+
+            .configuration-summary {
+                position: static;
+                max-height: none;
+                margin-top: 2rem;
+            }
+
+            .components-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 2rem;
+            }
+
+            .component-card {
+                padding: 1.5rem;
+            }
+
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .nav-tabs {
+                justify-content: space-around;
+            }
+
+            .performance-widget,
+            #budget-chart,
+            .summary-3d-view,
+            .summary-actions,
+            .financing-calculator {
+                display: block;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .theme-selector {
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+            }
+
+            .theme-selector i {
+                font-size: 24px;
+            }
+
+            .theme-options {
+                bottom: 70px;
+                right: 0;
+                padding: 1rem;
+                gap: 0.5rem;
+            }
+
+            .theme-option {
+                padding: 0.4rem 0.8rem;
+            }
+
+            .custom-theme-inputs input[type="color"] {
+                height: 35px;
+            }
+
+            .components-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .performance-categories {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .game-fps {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .summary-actions {
+                flex-direction: column;
+            }
+
+            .summary-actions button {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .header-icon {
+                font-size: 2rem;
+            }
+
+            .nav-tabs a i {
+                font-size: 1.5rem;
+            }
+
+            .component-card h3 {
+                font-size: 1.3rem;
+            }
+
+            .component-card ul li {
+                font-size: 0.9rem;
+            }
+
+            .component-card .price {
+                font-size: 1.3rem;
+            }
+
+            .performance-score {
+                font-size: 2.5rem;
+            }
+
+            .performance-widget h3 {
+                font-size: 1.3rem;
+            }
+
+            .monthly-payment {
+                font-size: 1.3rem;
+            }
+
+            .recommendation-section h3 {
+                font-size: 1.6rem;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--background-color);
+            border-radius: var(--border-radius);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-color);
+            border-radius: var(--border-radius);
+            transition: background var(--transition-speed);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary-color);
+        }
+
+        #comparisonModal .modal-content {
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: zoomIn 0.3s ease-out;
+        }
+
+        @keyframes zoomIn {
+            from {
+                opacity: 0;
+                transform: scale(0.7);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .summary-buttons button i {
+            margin-right: 0.5rem;
+            transition: transform var(--transition-speed);
+        }
+
+        .summary-buttons button:hover i {
+            transform: rotate(20deg);
+        }
+
+        .theme-option[data-theme="custom"] {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                font-size: 0.8rem;
+            }
+        }
+
+        .search-bar, .filter-options select, .sort-options select, .financing-calculator input {
+            font-size: 1rem;
+            aria-label: inherit;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        @keyframes ripple {
+            from {
+                transform: scale(0.5);
+                opacity: 0.7;
+            }
+            to {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+
+        .ripple-effect {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.6);
+            animation: ripple 0.6s linear;
+            pointer-events: none;
+        }
+
+        .custom-modal {
+            display: flex;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--overlay-bg);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .custom-modal-content {
+            background: var(--modal-bg);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            width: 400px;
+            position: relative;
+            box-shadow: var(--modal-shadow);
+            animation: slideIn 0.3s ease-out;
+            color: var(--primary-color);
+            border: 1px solid var(--secondary-color);
+        }
+
+        .custom-modal-content h3 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            text-align: center;
+            font-family: var(--font-family-secondary);
+        }
+
+        .link-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .link-container span {
+            color: var(--primary-color);
+            font-size: 1.1rem;
+            font-family: var(--font-family-secondary);
+            margin-right: 20px;
+        }
+
+        .open-button {
+            background-color: var(--secondary-color);
+            color: var(--light-color);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color var(--transition-speed), transform var(--transition-speed);
+            font-family: var(--font-family-secondary);
+        }
+
+        .open-button:hover {
+            background-color: var(--accent-color);
+            transform: scale(1.05);
+        }
+
+        .close-button {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: transparent;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--danger-color);
+            transition: color var(--transition-speed), transform var(--transition-speed);
+            font-family: var(--font-family-secondary);
+        }
+
+        .close-button:hover {
+            transform: rotate(90deg);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
+        
+        .custom-modal-content {
+            border: 1px solid var(--secondary-color);
+        }
+    </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
@@ -7679,703 +8367,628 @@
                 ],
         };
 
-        const selectedComponents = {};
-        let totalPrice = 0;
-        let currentCategory = 'cpu';
-        let filteredComponents = [...components[currentCategory]];
+        function updateBrandFilter() {
+  const brandFilter = document.getElementById('brandFilter');
+  brandFilter.innerHTML = '<option>Filtrer par marque</option>';
+  
+  const brands = [...new Set(components[currentCategory].map(comp => comp.brand))];
+  
+  brands.forEach(brand => {
+    const option = document.createElement('option');
+    option.value = brand;
+    option.textContent = brand;
+    brandFilter.appendChild(option);
+  });
+}
 
-        function updateComponentList() {
-            const componentList = document.querySelector('.components-grid');
-            componentList.innerHTML = '';
+    const selectedComponents = {};
+    let totalPrice = 0;
+    let currentCategory = 'cpu';
+    let filteredComponents = [...components[currentCategory]];
 
-            filteredComponents.forEach((component, index) => {
-                const card = document.createElement('div');
-                card.className = 'component-card';
-                card.innerHTML = `
+    function updateComponentList() {
+        const componentList = document.querySelector('.components-grid');
+        componentList.innerHTML = '';
+
+        filteredComponents.forEach((component, index) => {
+            const card = document.createElement('div');
+            card.className = 'component-card';
+            card.innerHTML = `
                 <img src="${component.image}" alt="${component.name}">
                 <h3>${component.name}</h3>
                 <ul>
-                ${component.specs.map(spec => `<li><i class="fas fa-check"></i>${spec}</li>`).join('')}
+                    ${component.specs.map(spec => `<li><i class="fas fa-check"></i>${spec}</li>`).join('')}
                 </ul>
                 <p class="price">$${component.price.toFixed(2)}</p>
                 <div class="buttons">
-                <button onclick="window.addToConfiguration('${currentCategory}', ${index})">Add</button>
-                <button onclick="window.compareComponent('${currentCategory}', ${index})">Compare</button>
+                    <button onclick="window.addToConfiguration('${currentCategory}', ${index})">Add</button>
+                    <button onclick="window.compareComponent('${currentCategory}', ${index})">Compare</button>
                 </div>
-                `;
-                componentList.appendChild(card);
-            });
-        }
+            `;
+            componentList.appendChild(card);
+        });
+    }
 
-        window.addToConfiguration = function(category, index) {
-            const component = filteredComponents[index];
-            selectedComponents[category] = component;
-            updateSummary();
-            updateProgressBar();
-        };
+    window.addToConfiguration = function(category, index) {
+        const component = filteredComponents[index];
+        selectedComponents[category] = component;
+        updateSummary();
+        updateProgressBar();
+    };
 
-        window.compareComponent = function(category, index) {
-            const modal = document.getElementById('comparisonModal');
-            const modalContent = modal.querySelector('.modal-content');
-            const component = filteredComponents[index];
+    window.compareComponent = function(category, index) {
+        const modal = document.getElementById('comparisonModal');
+        const modalContent = modal.querySelector('.modal-content');
+        const component = filteredComponents[index];
 
-            let comparisonHTML = `
+        let comparisonHTML = `
             <h2>Component Comparison</h2>
             <table class="comparison-table">
-            <tr>
-            <th>Feature</th>
-            <th>${component.name}</th>
-            ${components[category].map(comp => comp !== component ? `<th>${comp.name}</th>`: '').join('')}
-            </tr>
-            `;
-
-            component.specs.forEach((spec, i) => {
-                comparisonHTML += `
                 <tr>
-                <td>Spec ${i + 1}</td>
-                <td>${spec}</td>
-                ${components[category].map(comp => comp !== component ? `<td>${comp.specs[i]}</td>`: '').join('')}
+                    <th>Feature</th>
+                    <th>${component.name}</th>
+                    ${components[category].map(comp => comp !== component ? `<th>${comp.name}</th>` : '').join('')}
                 </tr>
-                `;
-            });
+        `;
 
+        component.specs.forEach((spec, i) => {
             comparisonHTML += `
-            <tr>
-            <td>Price</td>
-            <td>$${component.price.toFixed(2)}</td>
-            ${components[category].map(comp => comp !== component ? `<td>$${comp.price.toFixed(2)}</td>`: '').join('')}
-            </tr>
-            </table>
-            <div class="performance-chart">
-            <canvas id="performanceChart"></canvas>
-            </div>
+                <tr>
+                    <td>Spec ${i + 1}</td>
+                    <td>${spec}</td>
+                    ${components[category].map(comp => comp !== component ? `<td>${comp.specs[i]}</td>` : '').join('')}
+                </tr>
             `;
+        });
 
-            modalContent.innerHTML = comparisonHTML;
-            modal.style.display = 'block';
+        comparisonHTML += `
+            <tr>
+                <td>Price</td>
+                <td>$${component.price.toFixed(2)}</td>
+                ${components[category].map(comp => comp !== component ? `<td>$${comp.price.toFixed(2)}</td>` : '').join('')}
+            </tr>
+        </table>
+        <div class="performance-chart">
+            <canvas id="performanceChart"></canvas>
+        </div>
+        `;
 
-            const ctx = document.getElementById('performanceChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Performance', 'Price', 'Value'],
-                    datasets: components[category].map(comp => ({
-                        label: comp.name,
-                        data: [
-                            Math.random() * 100,
-                            comp.price,
-                            (Math.random() * 100) / comp.price * 1000
-                        ],
-                        backgroundColor: `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.6)`
-                    }))
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
+        modalContent.innerHTML = comparisonHTML;
+        modal.style.display = 'block';
+
+        const ctx = document.getElementById('performanceChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Performance', 'Price', 'Value'],
+                datasets: components[category].map(comp => ({
+                    label: comp.name,
+                    data: [
+                        Math.random() * 100,
+                        comp.price,
+                        (Math.random() * 100) / comp.price * 1000
+                    ],
+                    backgroundColor: `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.6)`
+                }))
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
                     }
                 }
-            });
-        };
+            }
+        });
+    };
 
-        function updateSummary() {
-            const summaryList = document.querySelector('.selected-components');
-            summaryList.innerHTML = '';
-            totalPrice = 0;
+    function updateSummary() {
+        const summaryList = document.querySelector('.selected-components');
+        summaryList.innerHTML = '';
+        totalPrice = 0;
 
-            for (const [category, component] of Object.entries(selectedComponents)) {
-                const li = document.createElement('li');
-                li.innerHTML = `
+        for (const [category, component] of Object.entries(selectedComponents)) {
+            const li = document.createElement('li');
+            li.innerHTML = `
                 <span><i class="fas fa-${getCategoryIcon(category)}"></i>${component.name}</span>
                 <span>$${component.price.toFixed(2)}</span>
                 <a href="${component.url}" target="_blank" style=" display: none;">URL</a>
-                `;
-                summaryList.appendChild (li);
-                totalPrice += component.price;
-                li.querySelector('a').href = component.url;
-            }
+            `;
+            summaryList.appendChild (li);
+            totalPrice += component.price;
+            li.querySelector('a').href = component.url;
+        }
 
-            document.querySelector('.total-price').textContent = `Total: $${totalPrice.toFixed(2)}`;
-            updatePerformanceWidget();
-            updateBudgetChart();
-        };
+        document.querySelector('.total-price').textContent = `Total: $${totalPrice.toFixed(2)}`;
+        updatePerformanceWidget();
+        updateBudgetChart();
+    };
 
-        document.querySelector('.summary-buttons button:last-child').remove();
+    document.querySelector('.summary-buttons button:last-child').remove();
 
-        document.getElementById('order-button').addEventListener('click', () => {
-    const components = Object.values(selectedComponents);
+    document.getElementById('order-button').addEventListener('click', () => {
+            const components = Object.values(selectedComponents);
 
-    const modal = document.createElement('div');
-  modal.style.cssText = `
-    display: flex;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7);
-    z-index: 1000;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity 0.3s ease-in-out;
-  `;
+            const modal = document.createElement('div');
+            modal.className = 'custom-modal';
 
-  const modalContent = document.createElement('div');
-  modalContent.style.cssText = `
-    background: #fff;
-    padding: 30px;
-    border-radius: 10px;
-    width: 90%;
-    max-width: 400px;
-    position: relative;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transform: scale(0.9);
-    transition: transform 0.3s ease-in-out;
-  `;
+            const modalContent = document.createElement('div');
+            modalContent.className = 'custom-modal-content';
 
-  const title = document.createElement('h3');
-  title.style.cssText = `
-    margin: 0 0 20px 0;
-    font-size: 24px;
-    color: #333;
-    text-align: center;
-  `;
-  title.innerText = 'Marchands';
-  modalContent.appendChild(title);
+            const title = document.createElement('h3');
+            title.innerText = 'Marchands';
+            modalContent.appendChild(title);
 
-  document.body.appendChild(modal);
-  modal.appendChild(modalContent);
-  
-  modal.offsetHeight;
-  
-  modal.style.opacity = '1';
-  modalContent.style.transform = 'scale(1)';
+            components.forEach((component) => {
+                const linkContainer = document.createElement('div');
+                linkContainer.className = 'link-container';
 
-    components.forEach((component) => {
-        const linkContainer = document.createElement('div');
-        linkContainer.style.display = 'flex';
-        linkContainer.style.justifyContent = 'space-between';
-        linkContainer.style.alignItems = 'center';
-        linkContainer.style.marginBottom = '10px';
+                const label = document.createElement('span');
+                label.innerText = component.name;
+                linkContainer.appendChild(label);
 
-        const label = document.createElement('span');
-        label.innerText = `${component.name}`;
-        linkContainer.appendChild(label);
+                const openButton = document.createElement('button');
+                openButton.innerText = 'Ouvrir';
+                openButton.className = 'open-button';
+                
+                openButton.addEventListener('click', () => {
+                    console.log(`Opening: ${component.url}`);
+                    window.open(component.url, '_blank');
+                });
 
-        const openButton = document.createElement('button');
-        openButton.innerText = 'Open';
-        openButton.style.marginLeft = '10px';
-        
-        openButton.addEventListener('click', () => {
-            console.log(`Opening: ${component.url}`);
-            window.open(component.url, '_blank');
+                linkContainer.appendChild(openButton);
+                modalContent.appendChild(linkContainer);
+            });
+
+            const closeButton = document.createElement('button');
+            closeButton.innerText = '✖';
+            closeButton.className = 'close-button';
+            modalContent.appendChild(closeButton);
+
+            modal.appendChild(modalContent);
+            document.body.appendChild(modal);
+
+            closeButton.addEventListener('click', () => {
+                document.body.removeChild(modal);
+            });
+
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    document.body.removeChild(modal);
+                }
+            });
         });
 
-        linkContainer.appendChild(openButton);
-        modalContent.appendChild(linkContainer);
-    });
+    function getCategoryIcon(category) {
+      const icons = {
+        cpu: 'microchip',
+        motherboard: 'server',
+        ram: 'memory',
+        gpu: 'tv',
+        storage: 'hdd',
+        psu: 'plug',
+        case: 'desktop',
+        cooling: 'fan'
+      };
+      return icons[category] || 'computer';
+    }
 
-    const closeButton = document.createElement('button');
-    closeButton.innerText = 'X';
-    closeButton.style.position = 'absolute';
-    closeButton.style.top = '10px';
-    closeButton.style.right = '10px';
-    modalContent.appendChild(closeButton);
+    function updateProgressBar() {
+      const progress = document.querySelector('.progress');
+      const progressSteps = document.querySelectorAll('.progress-step');
+      const completedSteps = Object.keys(selectedComponents).length;
+      const totalSteps = Object.keys(components).length;
+      
+      progress.style.width = `${(completedSteps / totalSteps) * 100}%`;
 
-    modal.appendChild(modalContent);
-    document.body.appendChild(modal);
-
-  
-    closeButton.addEventListener('click', () => {
-        document.body.removeChild(modal);
-    });
-});
-
-        function getCategoryIcon(category) {
-            const icons = {
-                cpu: 'microchip',
-                motherboard: 'server',
-                ram: 'memory',
-                gpu: 'tv',
-                storage: 'hdd',
-                psu: 'plug',
-            case: 'desktop',
-                cooling: 'fan',
-                lecteur: 'hdd',
-                son: 'volume-up',
-                tuning: 'link'
-            };
-            return icons[category] || 'computer';
+      progressSteps.forEach((step, index) => {
+        if (index < completedSteps) {
+          step.classList.add('completed');
+        } else {
+          step.classList.remove('completed');
         }
+      });
+    }
 
-        function updateProgressBar() {
-            const progress = document.querySelector('.progress');
-            const progressSteps = document.querySelectorAll('.progress-step');
-            const completedSteps = Object.keys(selectedComponents).length;
-            const totalSteps = Object.keys(components).length;
+    function updatePerformanceWidget() {
+      const performanceScore = document.querySelector('.performance-score');
+      const gameFps = document.querySelector('.game-fps');
+      
+      let score = 0;
+      if (selectedComponents.cpu) score += selectedComponents.cpu.price / 10;
+      if (selectedComponents.gpu) score += selectedComponents.gpu.price / 5;
+      if (selectedComponents.ram) score += selectedComponents.ram.price / 20;
+      
+      performanceScore.textContent = Math.round(score);
 
-            progress.style.width = `${(completedSteps / totalSteps) * 100}%`;
+      const games = [
+        { name: 'Cyberpunk 2077', fps: Math.round(score / 2) },
+        { name: 'Fortnite', fps: Math.round(score * 1.5) },
+        { name: 'Minecraft RTX', fps: Math.round(score * 1.2) }
+      ];
 
-            progressSteps.forEach((step, index) => {
-                if (index < completedSteps) {
-                    step.classList.add('completed');
-                } else {
-                    step.classList.remove('completed');
-                }
-            });
+      gameFps.innerHTML = games.map(game => `
+        <div>
+          <img src="game-${game.name.toLowerCase().replace(/\s/g, '')}.svg" alt="${game.name}">
+          <span>${game.fps} FPS</span>
+        </div>
+      `).join('');
+    }
+
+    function updateBudgetChart() {
+      const ctx = document.getElementById('budget-chart').getContext('2d');
+      const data = {
+        labels: Object.keys(selectedComponents),
+        datasets: [{
+          data: Object.values(selectedComponents).map(component => component.price),
+          backgroundColor: [
+            '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#FF6384', '#36A2EB'
+          ]
+        }]
+      };
+
+      new Chart(ctx, {
+        type: 'doughnut',
+        data: data,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          title: {
+            display: true,
+            text: 'Budget Allocation'
+          }
         }
+      });
+    }
 
-        function updatePerformanceWidget() {
-            const performanceScore = document.querySelector('.performance-score');
-            const gameFps = document.querySelector('.game-fps');
+    function initThemeSelector() {
+      const themeSelector = document.querySelector('.theme-selector');
+      const themeOptions = document.querySelector('.theme-options');
+      const themeOptionButtons = document.querySelectorAll('.theme-option');
+      const customThemeInputs = document.querySelectorAll('.custom-theme-inputs input');
 
-            let score = 0;
-            if (selectedComponents.cpu) score += selectedComponents.cpu.price / 10;
-            if (selectedComponents.gpu) score += selectedComponents.gpu.price / 5;
-            if (selectedComponents.ram) score += selectedComponents.ram.price / 20;
+      themeSelector.addEventListener('click', () => {
+        themeOptions.classList.toggle('show');
+      });
 
-            performanceScore.textContent = Math.round(score);
+      themeOptionButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          const theme = button.dataset.theme;
+          applyTheme(theme);
+        });
+      });
 
-            const games = [{
-                name: 'Cyberpunk 2077',
-                fps: Math.round(score / 2)
-            },
-                {
-                    name: 'Fortnite',
-                    fps: Math.round(score * 1.5)
-                },
-                {
-                    name: 'Minecraft RTX',
-                    fps: Math.round(score * 1.2)
-                }];
+      customThemeInputs.forEach(input => {
+        input.addEventListener('change', () => {
+          const customTheme = {
+            primary: document.getElementById('primary-color').value,
+            secondary: document.getElementById('secondary-color').value,
+            accent: document.getElementById('accent-color').value
+          };
+          applyCustomTheme(customTheme);
+        });
+      });
+    }
 
-            gameFps.innerHTML = games.map(game => `
-                <div>
-                <img src="game-${game.name.toLowerCase().replace(/\s/g, '')}.svg" alt="${game.name}">
-                <span>${game.fps} FPS</span>
-                </div>
-                `).join('');
-        }
+    function applyTheme(theme) {
+      const root = document.documentElement;
+      switch (theme) {
+        case 'dark':
+          root.style.setProperty('--primary-color', '#1a1a1a');
+          root.style.setProperty('--secondary-color', '#2c2c2c');
+          root.style.setProperty('--accent-color', '#e67e22');
+          root.style.setProperty('--background-color', '#121212');
+          root.style.setProperty('--text-color', '#ffffff');
+          break;
+        case 'light':
+          root.style.setProperty('--primary-color', '#ffffff');
+          root.style.setProperty('--secondary-color', '#f0f0f0');
+          root.style.setProperty('--accent-color', '#3498db');
+          root.style.setProperty('--background-color', '#f4f4f4');
+          root.style.setProperty('--text-color', '#333333');
+          break;
+        case 'neon':
+          root.style.setProperty('--primary-color', '#0a0a0a');
+          root.style.setProperty('--secondary-color', '#1c1c1c');
+          root.style.setProperty('--accent-color', '#00ff00');
+          root.style.setProperty('--background-color', '#000000');
+          root.style.setProperty('--text-color', '#ffffff');
+          break;
+      }
+    }
 
-        function updateBudgetChart() {
-            const ctx = document.getElementById('budget-chart').getContext('2d');
-            const data = {
-                labels: Object.keys(selectedComponents),
-                datasets: [{
-                    data: Object.values(selectedComponents).map(component => component.price),
-                    backgroundColor: [
-                        '#FF6384',
-                        '#36A2EB',
-                        '#FFCE56',
-                        '#4BC0C0',
-                        '#9966FF',
-                        '#FF9F40',
-                        '#FF6384',
-                        '#36A2EB'
-                    ]
-                }]
-            };
+    function applyCustomTheme(theme) {
+      const root = document.documentElement;
+      root.style.setProperty('--primary-color', theme.primary);
+      root.style.setProperty('--secondary-color', theme.secondary);
+      root.style.setProperty('--accent-color', theme.accent);
+    }
 
-            new Chart(ctx, {
-                type: 'doughnut',
-                data: data,
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    title: {
-                        display: true,
-                        text: 'Budget Allocation'
-                    }
-                }
-            });
-        }
+    function init3DView() {
+      const container = document.querySelector('.summary-3d-view');
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+      const renderer = new THREE.WebGLRenderer();
 
-        function initThemeSelector() {
-            const themeSelector = document.querySelector('.theme-selector');
-            const themeOptions = document.querySelector('.theme-options');
-            const themeOptionButtons = document.querySelectorAll('.theme-option');
-            const customThemeInputs = document.querySelectorAll('.custom-theme-inputs input');
+      renderer.setSize(container.clientWidth, container.clientHeight);
+      container.appendChild(renderer.domElement);
 
-            themeSelector.addEventListener('click', () => {
-                themeOptions.classList.toggle('show');
-            });
+      const geometry = new THREE.BoxGeometry();
+      const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+      const cube = new THREE.Mesh(geometry, material);
+      scene.add(cube);
 
-            themeOptionButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const theme = button.dataset.theme;
-                    applyTheme(theme);
-                });
-            });
+      camera.position.z = 5;
 
-            customThemeInputs.forEach(input => {
-                input.addEventListener('change', () => {
-                    const customTheme = {
-                        primary: document.getElementById('primary-color').value,
-                        secondary: document.getElementById('secondary-color').value,
-                        accent: document.getElementById('accent-color').value
-                    };
-                    applyCustomTheme(customTheme);
-                });
-            });
-        }
+      function animate() {
+        requestAnimationFrame(animate);
+        cube.rotation.x += 0.01;
+        cube.rotation.y += 0.01;
+        renderer.render(scene, camera);
+      }
 
-        function applyTheme(theme) {
-            const root = document.documentElement;
-            switch (theme) {
-            case 'dark':
-                root.style.setProperty('--primary-color', '#1a1a1a');
-                root.style.setProperty('--secondary-color', '#2c2c2c');
-                root.style.setProperty('--accent-color', '#e67e22');
-                root.style.setProperty('--background-color', '#121212');
-                root.style.setProperty('--text-color', '#ffffff');
-                break;
-            case 'light':
-                root.style.setProperty('--primary-color', '#ffffff');
-                root.style.setProperty('--secondary-color', '#f0f0f0');
-                root.style.setProperty('--accent-color', '#3498db');
-                root.style.setProperty('--background-color', '#f4f4f4');
-                root.style.setProperty('--text-color', '#333333');
-                break;
-            case 'neon':
-                root.style.setProperty('--primary-color', '#0a0a0a');
-                root.style.setProperty('--secondary-color', '#1c1c1c');
-                root.style.setProperty('--accent-color', '#00ff00');
-                root.style.setProperty('--background-color', '#000000');
-                root.style.setProperty('--text-color', '#ffffff');
-                break;
-            }
-        }
+      animate();
+    }
 
-        function applyCustomTheme(theme) {
-            const root = document.documentElement;
-            root.style.setProperty('--primary-color', theme.primary);
-            root.style.setProperty('--secondary-color', theme.secondary);
-            root.style.setProperty('--accent-color', theme.accent);
-        }
+    function initFinancingCalculator() {
+      const calculateButton = document.querySelector('.financing-calculator button');
+      const monthlyPayment = document.querySelector('.monthly-payment');
 
-        function init3DView() {
-            const container = document.querySelector('.summary-3d-view');
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
-            const renderer = new THREE.WebGLRenderer();
+      calculateButton.addEventListener('click', () => {
+        const loanAmount = totalPrice;
+        const interestRate = parseFloat(document.getElementById('interest-rate').value) / 100 / 12;
+        const loanTerm = parseInt(document.getElementById('loan-term').value) * 12;
 
-            renderer.setSize(container.clientWidth, container.clientHeight);
-            container.appendChild(renderer.domElement);
+        const monthlyPaymentAmount = (loanAmount * interestRate * Math.pow(1 + interestRate, loanTerm)) / (Math.pow(1 + interestRate, loanTerm) - 1);
+        monthlyPayment.textContent = `Monthly Payment: $${monthlyPaymentAmount.toFixed(2)}`;
+      });
+    }
 
-            const geometry = new THREE.BoxGeometry();
-            const material = new THREE.MeshBasicMaterial({
-                color: 0x00ff00
-            });
-            const cube = new THREE.Mesh(geometry, material);
-            scene.add(cube);
+    function initFilters() {
+      const searchBar = document.querySelector('.search-bar');
+      const brandFilter = document.querySelector('select[name="brand"]');
+      const priceFilter = document.querySelector('select[name="price"]');
+      const sortOption = document.querySelector('select[name="sort"]');
 
-            camera.position.z = 5;
+      if (searchBar && brandFilter && priceFilter && sortOption) {
+        searchBar.addEventListener('input', applyFilters);
+        brandFilter.addEventListener('change', applyFilters);
+        priceFilter.addEventListener('change', applyFilters);
+        sortOption.addEventListener('change', applyFilters);
+      }
 
-            function animate() {
-                requestAnimationFrame(animate);
-                cube.rotation.x += 0.01;
-                cube.rotation.y += 0.01;
-                renderer.render(scene, camera);
-            }
+      function applyFilters() {
+        const searchTerm = searchBar.value.toLowerCase();
+        const selectedBrand = brandFilter.value;
+        const selectedPriceRange = priceFilter.value;
+        const selectedSortOption = sortOption.value;
 
-            animate();
-        }
+        filteredComponents = components[currentCategory].filter(component => {
+          const matchesSearch = component.name.toLowerCase().includes(searchTerm);
+          const matchesBrand = selectedBrand === "Filtrer par marque" || component.brand === selectedBrand;
+          const matchesPrice = selectedPriceRange === "Filtrer par prix" || 
+            (selectedPriceRange === "Moins de 100€" && component.price < 100) ||
+            (selectedPriceRange === "100€ - 500€" && component.price >= 100 && component.price <= 500) ||
+            (selectedPriceRange === "Plus de 500€" && component.price > 500);
 
-        function initFinancingCalculator() {
-            const calculateButton = document.querySelector('.financing-calculator button');
-            const monthlyPayment = document.querySelector('.monthly-payment');
+          return matchesSearch && matchesBrand && matchesPrice;
+        });
 
-            calculateButton.addEventListener('click', () => {
-                const loanAmount = totalPrice;
-                const interestRate = parseFloat(document.getElementById('interest-rate').value) / 100 / 12;
-                const loanTerm = parseInt(document.getElementById('loan-term').value) * 12;
-
-                const monthlyPaymentAmount = (loanAmount * interestRate * Math.pow(1 + interestRate, loanTerm)) / (Math.pow(1 + interestRate, loanTerm) - 1);
-                monthlyPayment.textContent = `Monthly Payment: $${monthlyPaymentAmount.toFixed(2)}`;
-            });
-        }
-
-        function initFilters() {
-            const searchBar = document.querySelector('.search-bar');
-            const brandFilter = document.querySelector('select[name="brand"]');
-            const priceFilter = document.querySelector('select[name="price"]');
-            const sortOption = document.querySelector('select[name="sort"]');
-
-            if (searchBar && brandFilter && priceFilter && sortOption) {
-                searchBar.addEventListener('input', applyFilters);
-                brandFilter.addEventListener('change', applyFilters);
-                priceFilter.addEventListener('change', applyFilters);
-                sortOption.addEventListener('change', applyFilters);
-            }
-
-            function applyFilters() {
-                const searchTerm = searchBar.value.toLowerCase();
-                const selectedBrand = brandFilter.value;
-                const selectedPriceRange = priceFilter.value;
-                const selectedSortOption = sortOption.value;
-
-                filteredComponents = components[currentCategory].filter(component => {
-                    const matchesSearch = component.name.toLowerCase().includes(searchTerm);
-                    const matchesBrand = selectedBrand === "Filtrer par marque" || component.brand === selectedBrand;
-                    const matchesPrice = selectedPriceRange === "Filtrer par prix" ||
-                    (selectedPriceRange === "Moins de 100€" && component.price < 100) ||
-                    (selectedPriceRange === "100€ - 200€" && component.price >= 100 && component.price <= 200) ||
-                    (selectedPriceRange === "200€ - 300€" && component.price >= 200 && component.price <= 300) ||
-                    (selectedPriceRange === "300€ - 400€" && component.price >= 300 && component.price <= 400) ||
-                    (selectedPriceRange === "400€ - 500€" && component.price >= 400 && component.price <= 500) ||
-                    (selectedPriceRange === "500€ - 600€" && component.price >= 500 && component.price <= 600) ||
-                    (selectedPriceRange === "600€ - 700€" && component.price >= 600 && component.price <= 700) ||
-                    (selectedPriceRange === "700€ - 800€" && component.price >= 700 && component.price <= 800) ||
-                    (selectedPriceRange === "800€ - 900€" && component.price >= 800 && component.price <= 900) ||
-                    (selectedPriceRange === "900€ - 1000€" && component.price >= 900 && component.price <= 1000) ||
-                    (selectedPriceRange === "Plus de 1000€" && component.price > 1000);
-
-                    return matchesSearch && matchesBrand && matchesPrice;
-                });
-
-                switch (selectedSortOption) {
-                case "Prix croissant":
-                    filteredComponents.sort((a, b) => a.price - b.price);
-                    break;
-                case "Prix décroissant":
-                    filteredComponents.sort((a, b) => b.price - a.price);
-                    break;
-                case "Popularité":
-                    break;
-                }
-
-                updateComponentList();
-            }
+        switch(selectedSortOption) {
+          case "Prix croissant":
+            filteredComponents.sort((a, b) => a.price - b.price);
+            break;
+          case "Prix décroissant":
+            filteredComponents.sort((a, b) => b.price - a.price);
+            break;
+          case "Popularité":
+            break;
         }
 
         updateComponentList();
-        initThemeSelector();
-        init3DView();
-        initFinancingCalculator();
-        initFilters();
+      }
+    }
 
-        document.querySelectorAll('.nav-tabs a').forEach(tab => {
-            tab.addEventListener('click', (e) => {
-                e.preventDefault();
-                currentCategory = e.target.getAttribute('href').substring(1);
-                filteredComponents = [...components[currentCategory]];
-                updateComponentList();
-            });
-        });
+    updateComponentList();
+    initThemeSelector();
+    init3DView();
+    initFinancingCalculator();
+    initFilters();
 
-        window.onclick = function(event) {
-            const modal = document.getElementById('comparisonModal');
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
-        }
+    document.querySelectorAll('.nav-tabs a').forEach(tab => {
+  tab.addEventListener('click', (e) => {
+    e.preventDefault();
+    currentCategory = e.target.getAttribute('href').substring(1);
+    filteredComponents = [...components[currentCategory]];
+    updateBrandFilter();
+    updateComponentList();
+  });
+});
 
-        window.generatePDF = function() {
-            console.log("Generating PDF...");
-        }
+    window.onclick = function(event) {
+      const modal = document.getElementById('comparisonModal');
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
 
-        window.shareSocial = function() {
-            console.log("Sharing on social media...");
-        }
+    window.generatePDF = function() {
+      console.log("Generating PDF...");
+    }
 
-        window.viewInAR = function() {
-            console.log("Opening AR view...");
-        }
-    });
+    window.shareSocial = function() {
+      console.log("Sharing on social media...");
+    }
+
+    window.viewInAR = function() {
+      console.log("Opening AR view...");
+    }
+  });
 </script>
+<style>
+  @keyframes fadeOut {
+      from {
+          opacity: 1;
+          transform: scale(1);
+      }
+      to {
+          opacity: 0;
+          transform: scale(0.7);
+      }
+  }
+</style>
 </head>
 <body>
-    <header>
-        <div class="container">
+  <header>
+      <div class="container">
           <div class="header-content">
-            <h1><i class="fas fa-desktop header-icon"></i>QMD - Configurateur PC</h1>
+              <h1><i class="fas fa-desktop header-icon"></i>QMD - Configurateur PC</h1>
           </div>
           <div class="progress-bar">
-            <div class="progress"></div>
+              <div class="progress"></div>
           </div>
+      </div>
+  </header>
+
+  <nav>
+    <div class="container">
+      <ul class="nav-tabs">
+        <li><a href="#cpu"><i class="fas fa-microchip"></i>CPU</a></li>
+        <li><a href="#motherboard"><i class="fas fa-server"></i>Carte mère</a></li>
+        <li><a href="#ram"><i class="fas fa-memory"></i>RAM</a></li>
+        <li><a href="#gpu"><i class="fas fa-tv"></i>GPU</a></li>
+        <li><a href="#storage"><i class="fas fa-hdd"></i>Stockage</a></li>
+        <li><a href="#psu"><i class="fas fa-plug"></i>Alimentation</a></li>
+        <li><a href="#case"><i class="fas fa-desktop"></i>Boîtier</a></li>
+        <li><a href="#cooling"><i class="fas fa-fan"></i>Refroidissement</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <div class="component-list">
+        <div class="filters">
+            <input type="text" class="search-bar" placeholder="Rechercher un composant..." aria-label="Rechercher un composant">
+            <div class="filter-options">
+                <select name="brand" id="brandFilter" aria-label="Filtrer par marque">
+                    <option>Filtrer par marque</option>
+                </select>
+                <select name="price" aria-label="Filtrer par prix">
+                    <option>Filtrer par prix</option>
+                    <option>Moins de 100€</option>
+                    <option>100€ - 500€</option>
+                    <option>Plus de 500€</option>
+                </select>
+            </div>
+            <div class="sort-options">
+                <select name="sort" aria-label="Trier par">
+                    <option>Trier par</option>
+                    <option>Prix croissant</option>
+                    <option>Prix décroissant</option>
+                    <option>Popularité</option>
+                </select>
+            </div>
         </div>
-      </header>
+
+        <div class="components-grid">
+        </div>
+    </div>
+
+    <style>
+      #budget-chart,
+      .performance-widget,
+      .summary-3d-view,
+      .summary-actions,
+      .financing-calculator {
+        display: none;
+      }
+    </style>
     
-
-<nav>
-<div class="container">
-<ul class="nav-tabs">
-<li><a href="#cpu"><i class="fas fa-microchip"></i>CPU</a></li>
-<li><a href="#motherboard"><i class="fas fa-server"></i>Carte mère</a></li>
-<li><a href="#ram"><i class="fas fa-memory"></i>RAM</a></li>
-<li><a href="#gpu"><i class="fas fa-tv"></i>GPU</a></li>
-<li><a href="#storage"><i class="fas fa-hdd"></i>Stockage</a></li>
-<li><a href="#psu"><i class="fas fa-plug"></i>Alimentation</a></li>
-<li><a href="#case"><i class="fas fa-desktop"></i>Boîtier</a></li>
-<li><a href="#cooling"><i class="fas fa-fan"></i>Refroidissement</a></li>
-</ul>
-</div>
-</nav>
-
-<main>
-<div class="component-list">
-<div class="filters">
-<input type="text" class="search-bar" placeholder="Rechercher un composant...">
-<div class="filter-options">
-<select name="brand">
-<option>Filtrer par marque</option>
-<option>Intel</option>
-<option>AMD</option>
-<option>NVIDIA</option>
-<option>ASUS</option>
-<option>MSI</option>
-<option>Gigabyte</option>
-<option>Corsair</option>
-<option>G.Skill</option>
-<option>Crucial</option>
-<option>Samsung</option>
-<option>Western Digital</option>
-<option>Sabrent</option>
-<option>EVGA</option>
-<option>Seasonic</option>
-<option>Lian Li</option>
-<option>Phanteks</option>
-<option>Fractal Design</option>
-<option>NZXT</option>
-<option>be quiet!</option>
-</select>
-<select name="price">
-<option>Filtrer par prix</option>
-<option>Moins de 100€</option>
-<option>100€ - 200€</option>
-<option>200€ - 300€</option>
-<option>300€ - 400€</option>
-<option>400€ - 500€</option>
-<option>500€ - 600€</option>
-<option>600€ - 700€</option>
-<option>700€ - 800€</option>
-<option>800€ - 900€</option>
-<option>900€ - 1000€</option>
-<option>Plus de 1000€</option>
-</select>
-</div>
-<div class="sort-options">
-<select name="sort">
-<option>Trier par</option>
-<option>Prix croissant</option>
-<option>Prix décroissant</option>
-<option>Popularité</option>
-</select>
-</div>
-</div>
-
-<div class="components-grid">
-</div>
-</div>
-
-<style>
-#budget-chart,
-.performance-widget,
-.summary-3d-view,
-.summary-actions,
-.financing-calculator {
-display: none;
-}
-</style>
-
-<div class="configuration-summary">
-<h2>Résumé de la configuration</h2>
-<ul class="selected-components">
-</ul>
-<div class="total-price">
-Total: 0 €
-</div>
-<div class="summary-buttons">
-<button id="order-button">Commander</button>
-<div id="budget-chart"></div>
-<div class="performance-widget">
-<h3>Performance estimée</h3>
-<div class="performance-score">
-0
-</div>
-<div class="performance-categories">
-<div class="performance-category">
-<i class="fas fa-gamepad"></i>
-<p>
-Jeux
-</p>
-</div>
-<div class="performance-category">
-<i class="fas fa-video"></i>
-<p>
-Vidéo
-</p>
-</div>
-<div class="performance-category">
-<i class="fas fa-code"></i>
-<p>
-Dev
-</p>
-</div>
-</div>
-<div class="game-fps">
-<div>
-<img src="" alt="">
-<span>0 FPS</span>
-</div>
-<div>
-<img src="" alt="">
-<span>0 FPS</span>
-</div>
-<div>
-<img src="" alt="">
-<span>0 FPS</span>
-</div>
-</div>
-</div>
-<div class="summary-3d-view">
-Vue 3D de la configuration
-</div>
-<div class="summary-actions">
-<button>Partager</button>
-<button>Exporter PDF</button>
-<button>Comparer</button>
-</div>
-<div class="financing-calculator">
-<h3>Calculateur de financement</h3>
-<input type="number" placeholder="Montant de l'acompte">
-<input type="number" placeholder="Durée du prêt (mois)">
-<button>Calculer</button>
-<div class="monthly-payment">
-Mensualité: 0 €
-</div>
-</div>
-</div>
-</div>
+    <div class="configuration-summary">
+      <h2>Résumé de la configuration</h2>
+      <ul class="selected-components">
+      </ul>
+      <div class="total-price">Total: $0.00</div>
+      <div class="summary-buttons">
+          <button id="order-button"><i class="fas fa-shopping-cart"></i> Commander</button>
+          <div id="budget-chart"></div>
+          <div class="performance-widget">
+              <h3>Performance estimée</h3>
+              <div class="performance-score">0</div>
+              <div class="performance-categories">
+                  <div class="performance-category">
+                      <i class="fas fa-gamepad"></i>
+                      <p>Jeux</p>
+                  </div>
+                  <div class="performance-category">
+                      <i class="fas fa-video"></i>
+                      <p>Vidéo</p>
+                  </div>
+                  <div class="performance-category">
+                      <i class="fas fa-code"></i>
+                      <p>Dev</p>
+                  </div>
+              </div>
+              <div class="game-fps">
+                  <div>
+                      <img src="game-cyberpunk2077.svg" alt="Cyberpunk 2077">
+                      <span>0 FPS</span>
+                  </div>
+                  <div>
+                      <img src="game-fortnite.svg" alt="Fortnite">
+                      <span>0 FPS</span>
+                  </div>
+                  <div>
+                      <img src="game-minecraftrtx.svg" alt="Minecraft RTX">
+                      <span>0 FPS</span>
+                  </div>
+              </div>
+          </div>
+          <div class="summary-3d-view">
+              Vue 3D de la configuration
+          </div>
+          <div class="summary-actions">
+              <button onclick="window.shareSocial()"><i class="fas fa-share-alt"></i> Partager</button>
+              <button onclick="window.generatePDF()"><i class="fas fa-file-pdf"></i> Exporter PDF</button>
+              <button onclick="window.viewInAR()"><i class="fas fa-glasses"></i> Comparer</button>
+          </div>
+          <div class="financing-calculator">
+              <h3>Calculateur de financement</h3>
+              <input type="number" id="interest-rate" placeholder="Taux d'intérêt (%)">
+              <input type="number" id="loan-term" placeholder="Durée du prêt (mois)">
+              <button>Calculer</button>
+              <div class="monthly-payment">Mensualité: $0.00</div>
+          </div>
+      </div>
+  </div>
 </main>
 
 <div class="theme-selector">
-<i class="fas fa-palette"></i>
+  <i class="fas fa-palette"></i>
 </div>
 
 <div class="theme-options">
-<div class="theme-option" data-theme="default">
-<div class="theme-color" style="background-color: #1e3a5f;"></div>
-<span>Défaut</span>
-</div>
-<div class="theme-option" data-theme="dark">
-<div class="theme-color" style="background-color: #1a1a1a;"></div>
-<span>Sombre</span>
-</div>
-<div class="theme-option" data-theme="light">
-<div class="theme-color" style="background-color: #f0f0f0;"></div>
-<span>Clair</span>
-</div>
-<div class="custom-theme-inputs">
-<input type="color" id="primary-color" value="#1e3a5f">
-<input type="color" id="secondary-color" value="#3498db">
-<input type="color" id="accent-color" value="#e74c3c">
-</div>
+  <div class="theme-option" data-theme="default">
+      <div class="theme-color" style="background-color: #1e3a5f;"></div>
+      <span>Défaut</span>
+  </div>
+  <div class="theme-option" data-theme="dark">
+      <div class="theme-color" style="background-color: #1a1a1a;"></div>
+      <span>Sombre</span>
+  </div>
+  <div class="theme-option" data-theme="light">
+      <div class="theme-color" style="background-color: #f0f0f0;"></div>
+      <span>Clair</span>
+  </div>
+  <div class="custom-theme-inputs">
+      <input type="color" id="primary-color" value="#1e3a5f" title="Couleur primaire">
+      <input type="color" id="secondary-color" value="#3498db" title="Couleur secondaire">
+      <input type="color" id="accent-color" value="#e74c3c" title="Couleur d'accent">
+  </div>
 </div>
 
-<script>
-</script>
+<div id="comparisonModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000;">
+  <div class="modal-content" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); background:#fff; padding:2rem; border-radius:1rem; width:90%; max-width:800px;">
+  </div>
+</div>
 </body>
 </html>
