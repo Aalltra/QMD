@@ -2219,7 +2219,7 @@
                 const logoBase64 = await getBase64(logoFile);
                 const token = decodeToken(encodedGithubToken);
 
-                const uploadLogoResponse = await fetch('https://api.github.com/repos/Aalltra/sponsor1/contents/logo/' + logoName, {
+                const uploadLogoResponse = await fetch('https://api.github.com/repos/Aalltra/QMD/contents/logo/' + logoName, {
                     method: 'PUT',
                     headers: {
                         'Authorization': `token ${token}`,
@@ -10069,7 +10069,6 @@
         updatePerformanceWidget();
         updateBudgetChart();
         
-        // Update merchant window if it's open
         const merchantModal = document.querySelector('.custom-modal');
         if (merchantModal) {
             const selects = merchantModal.querySelectorAll('.merchant-select');
@@ -10079,7 +10078,6 @@
                     select.value = selectedComponents[category].merchantIndex;
                 }
             });
-            // Update total price in merchant window
             const totalPriceDiv = merchantModal.querySelector('.total-price');
             if (totalPriceDiv) {
                 totalPriceDiv.textContent = `Total: ${totalPrice.toLocaleString('fr-FR', {style: 'currency', currency: 'EUR'})}`;
