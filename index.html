@@ -1,0 +1,304 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QMD</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>PC Builder</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#" class="active" data-page="home">Home</a></li>
+                    <li><a href="#" data-page="builder">PC Builder</a></li>
+                    <li><a href="#" data-page="forum">Forum</a></li>
+                    <li><a href="#" data-page="marketplace">Marketplace</a></li>
+                    <li><a href="#" data-page="saved">Saved Builds</a></li>
+                </ul>
+            </nav>
+            <div class="user-actions">
+                <button id="loginBtn">Login</button>
+                <button id="registerBtn">Register</button>
+                <div class="user-profile hidden">
+                    <span id="username">User</span>
+                    <button id="logoutBtn">Logout</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div id="home" class="page active">
+            <div class="container">
+                <div class="hero">
+                    <h2>Build Your Dream PC</h2>
+                    <p>Choose from thousands of components to create your perfect custom PC</p>
+                    <button id="startBuildBtn" class="cta-button">Start Building</button>
+                </div>
+                <div class="features">
+                    <div class="feature">
+                        <i class="fas fa-cog"></i>
+                        <h3>Custom PC Builder</h3>
+                        <p>Configure your PC with our easy-to-use builder</p>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-comments"></i>
+                        <h3>Community Forum</h3>
+                        <p>Get help and share knowledge with other enthusiasts</p>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-store"></i>
+                        <h3>Marketplace</h3>
+                        <p>Buy and sell used components from the community</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="builder" class="page">
+            <div class="container">
+                <h2>PC Builder</h2>
+                <div class="builder-content">
+                    <div class="component-selection">
+                        <div class="categories">
+                            <ul id="componentCategories">
+                            </ul>
+                        </div>
+                        <div class="component-list">
+                            <h3 id="currentCategory">Select a category</h3>
+                            <div id="componentSearch">
+                                <input type="text" placeholder="Search components...">
+                            </div>
+                            <div id="componentItems">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="build-summary">
+                        <h3>Your Build</h3>
+                        <div id="buildList">
+                        </div>
+                        <div class="build-actions">
+                            <div class="total-price">
+                                <span>Total:</span>
+                                <span id="totalPrice">$0.00</span>
+                            </div>
+                            <button id="saveBuildBtn" disabled>Save Build</button>
+                            <button id="shareBuildBtn" disabled>Share Build</button>
+                            <button id="clearBuildBtn">Clear All</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="forum" class="page">
+            <div class="container">
+                <h2>Community Forum</h2>
+                <div class="forum-content">
+                    <div class="forum-categories">
+                        <h3>Categories</h3>
+                        <ul>
+                            <li><a href="#" data-category="general">General Discussion</a></li>
+                            <li><a href="#" data-category="builds">Build Showcases</a></li>
+                            <li><a href="#" data-category="help">Technical Help</a></li>
+                            <li><a href="#" data-category="news">Hardware News</a></li>
+                        </ul>
+                        <button id="newThreadBtn" class="new-thread-btn">New Thread</button>
+                    </div>
+                    <div class="forum-threads">
+                        <div id="threadsContainer">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="marketplace" class="page">
+            <div class="container">
+                <h2>Marketplace</h2>
+                <div class="marketplace-content">
+                    <div class="marketplace-filters">
+                        <h3>Filter Components</h3>
+                        <div class="filter-group">
+                            <label for="categoryFilter">Category</label>
+                            <select id="categoryFilter">
+                                <option value="all">All Categories</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="priceRange">Max Price</label>
+                            <input type="range" id="priceRange" min="0" max="2000" step="50" value="2000">
+                            <span id="priceValue">$2000</span>
+                        </div>
+                        <button id="sellItemBtn" class="sell-item-btn">Sell an Item</button>
+                    </div>
+                    <div class="marketplace-listings">
+                        <div id="listingsContainer">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="saved" class="page">
+            <div class="container">
+                <h2>Your Saved Builds</h2>
+                <div id="savedBuildsContainer">
+                    <div class="login-prompt">
+                        <p>Please log in to view your saved builds</p>
+                        <button class="login-btn">Login</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Login</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Register</h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="regUsername">Username</label>
+                    <input type="text" id="regUsername" required>
+                </div>
+                <div class="form-group">
+                    <label for="regEmail">Email</label>
+                    <input type="email" id="regEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="regPassword">Password</label>
+                    <input type="password" id="regPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="regConfirmPassword">Confirm Password</label>
+                    <input type="password" id="regConfirmPassword" required>
+                </div>
+                <button type="submit">Register</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="componentModal" class="modal">
+        <div class="modal-content component-detail">
+            <span class="close">&times;</span>
+            <div id="componentDetail">
+            </div>
+        </div>
+    </div>
+
+    <div id="newThreadModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>New Thread</h2>
+            <form id="newThreadForm">
+                <div class="form-group">
+                    <label for="threadTitle">Title</label>
+                    <input type="text" id="threadTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="threadCategory">Category</label>
+                    <select id="threadCategory" required>
+                        <option value="general">General Discussion</option>
+                        <option value="builds">Build Showcases</option>
+                        <option value="help">Technical Help</option>
+                        <option value="news">Hardware News</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="threadContent">Content</label>
+                    <textarea id="threadContent" rows="6" required></textarea>
+                </div>
+                <button type="submit">Create Thread</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="sellItemModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Sell an Item</h2>
+            <form id="sellItemForm">
+                <div class="form-group">
+                    <label for="itemTitle">Title</label>
+                    <input type="text" id="itemTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="itemCategory">Category</label>
+                    <select id="itemCategory" required>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="itemPrice">Price ($)</label>
+                    <input type="number" id="itemPrice" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="itemCondition">Condition</label>
+                    <select id="itemCondition" required>
+                        <option value="New">New</option>
+                        <option value="Like New">Like New</option>
+                        <option value="Very Good">Very Good</option>
+                        <option value="Good">Good</option>
+                        <option value="Acceptable">Acceptable</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="itemDescription">Description</label>
+                    <textarea id="itemDescription" rows="6" required></textarea>
+                </div>
+                <button type="submit">List Item</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="shareBuildModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Share Your Build</h2>
+            <div class="share-options">
+                <p>Copy the link below to share your build:</p>
+                <div class="share-link">
+                    <input type="text" id="buildShareLink" readonly>
+                    <button id="copyLinkBtn">Copy</button>
+                </div>
+                <div class="social-share">
+                    <button class="share-btn facebook">Share on Facebook</button>
+                    <button class="share-btn twitter">Share on Twitter</button>
+                    <button class="share-btn reddit">Share on Reddit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 PC Builder. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/app.js" type="module"></script>
+</body>
+</html>
