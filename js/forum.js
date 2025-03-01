@@ -5,14 +5,25 @@ let currentCategory = 'general';
 
 export function initForum() {
     setupForumEventListeners();
-    loadForumCategory(currentCategory);
+    
+    if (document.querySelector('.forum-categories a[data-category="general"]')) {
+        setupGeneralChat();
+    } else {
+        loadForumCategory('general');
+    }
     
     document.addEventListener('auth:login', () => {
         updateNewThreadButton();
+        if (document.getElementById('chatMessages')) {
+            loadGeneralChatMessages();
+        }
     });
     
     document.addEventListener('auth:logout', () => {
         updateNewThreadButton();
+        if (document.getElementById('chatMessages')) {
+            document.getElementById('chatMessages').innerHTML = '<p>Please log in to view chat messages</p>';
+        }
     });
     
     console.log('Forum module initialized');
@@ -302,5 +313,149 @@ async function createNewThread() {
     } catch (error) {
         console.error('Failed to create thread:', error);
         showNotification('Failed to create thread', 'error');
+    }
+}
+
+function setupGeneralChat() {
+    const generalLink = document.querySelector('.forum-categories a[data-category="general"]');
+    generalLink.textContent = 'General Chat';
+    generalLink.innerHTML = '<i class="fas fa-comments"></i> General Chat';
+    generalLink.classList.add('active');
+    
+    document.querySelectorAll('.forum-categories a').forEach(link => {
+        if (link !== generalLink) {
+            link.classList.remove('active');
+        }
+    });
+    
+    const threadsContainer = document.getElementById('threadsContainer');
+    threadsContainer.innerHTML = `
+        <div class="chat-container">
+            <div class="chat-messages" id="chatMessages">
+                <p>Loading chat messages...</p>
+            </div>
+            <div class="chat-input">
+                <form id="chatForm">
+                    <input type="text" id="chatMessageInput" placeholder="Type a message..." ${!isAuthenticated() ? 'disabled' : ''}>
+                    <button type="submit" ${!isAuthenticated() ? 'disabled' : ''}>Send</button>
+                </form>
+            </div>
+        </div>
+    `;
+    
+    if (isAuthenticated()) {
+        loadGeneralChatMessages();
+    } else {
+        document.getElementById('chatMessages').innerHTML = '<p>Please log in to view chat messages</p>';
+    }
+    
+    const chatForm = document.getElementById('chatForm');
+    chatForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (!isAuthenticated()) {
+            showNotification('Please log in to send messages', 'warning');
+            return;
+        }
+        
+        const messageInput = document.getElementById('chatMessageInput');
+        const message = messageInput.value.trim();
+        
+        if (message) {
+            sendGeneralChatMessage(message);
+            messageInput.value = '';
+        }
+    });
+}
+
+async function loadGeneralChatMessages() {
+    if (!isAuthenticated()) return;
+    
+    try {
+        const threads = await API.getThreadsByCategory('all');
+        let allComments = [];
+        
+        threads.forEach(thread => {
+            if (thread.comments && thread.comments.length > 0) {
+                thread.comments.forEach(comment => {
+                    allComments.push({
+                        userId: comment.userId,
+                        content: comment.content,
+                        createdAt: comment.createdAt
+                    });
+                });
+            }
+        });
+        
+        allComments.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+        
+        if (allComments.length > 50) {
+            allComments = allComments.slice(allComments.length - 50);
+        }
+        
+        const chatMessages = document.getElementById('chatMessages');
+        if (!chatMessages) return;
+        
+        if (allComments.length === 0) {
+            chatMessages.innerHTML = '<p>No messages yet. Be the first to say something!</p>';
+            return;
+        }
+        
+        let messagesHTML = '';
+        let currentDay = null;
+        
+        for (const message of allComments) {
+            const user = API.users.find(u => u.id === message.userId);
+            const username = user ? user.username : 'Unknown User';
+            
+            const messageDate = new Date(message.createdAt).toLocaleDateString();
+            if (messageDate !== currentDay) {
+                currentDay = messageDate;
+                messagesHTML += `<div class="chat-date-separator">${messageDate}</div>`;
+            }
+            
+            const isCurrentUser = user && getCurrentUser() && user.id === getCurrentUser().id;
+            
+            messagesHTML += `
+                <div class="chat-message ${isCurrentUser ? 'current-user' : ''}">
+                    <div class="chat-message-user">${username}</div>
+                    <div class="chat-message-content">${message.content}</div>
+                    <div class="chat-message-time">${new Date(message.createdAt).toLocaleTimeString()}</div>
+                </div>
+            `;
+        }
+        
+        chatMessages.innerHTML = messagesHTML;
+        
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    } catch (error) {
+        console.error('Failed to load chat messages:', error);
+        const chatMessages = document.getElementById('chatMessages');
+        if (chatMessages) {
+            chatMessages.innerHTML = '<p>Failed to load chat messages. Please try again later.</p>';
+        }
+    }
+}
+
+async function sendGeneralChatMessage(message) {
+    if (!isAuthenticated()) return;
+    
+    try {
+        let generalThread = API.threads.find(t => t.title === 'General Chat Thread');
+        
+        if (!generalThread) {
+            generalThread = await API.createThread(
+                getCurrentUser().id,
+                'general',
+                'General Chat Thread',
+                'This thread is used for general chat messages.'
+            );
+        }
+        
+        await API.addComment(generalThread.id, getCurrentUser().id, message);
+        
+        loadGeneralChatMessages();
+    } catch (error) {
+        console.error('Failed to send chat message:', error);
+        showNotification('Failed to send message', 'error');
     }
 }

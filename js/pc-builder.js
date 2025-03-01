@@ -124,11 +124,17 @@ function showComponentDetails(component, categoryId) {
     if (component.vendors && component.vendors.length > 0) {
         vendorsHtml = '<div class="vendor-list">';
         component.vendors.forEach(vendor => {
+            const isMarketplace = vendor.marketplace === true;
             vendorsHtml += `
                 <div class="vendor-item">
                     <span class="vendor-name">${vendor.name}</span>
                     <span class="vendor-price">$${vendor.price.toFixed(2)}</span>
-                    <button class="select-vendor" data-vendor="${vendor.id}">Select</button>
+                    ${vendor.url ? 
+                        `<a href="${vendor.url}" target="_blank" class="select-vendor ${isMarketplace ? 'view-marketplace' : ''}" data-vendor="${vendor.id}">
+                            ${isMarketplace ? 'View Listing' : 'Visit Store'}
+                        </a>` :
+                        `<button class="select-vendor" data-vendor="${vendor.id}">Select</button>`
+                    }
                 </div>
             `;
         });
@@ -148,6 +154,14 @@ function showComponentDetails(component, categoryId) {
         }
         specsHtml += '</div>';
     }
+    
+    let reviewsHtml = '<p>Loading reviews...</p>';
+    loadComponentReviews(component.id).then(reviews => {
+        const reviewsList = document.getElementById('reviewsList');
+        if (reviewsList) {
+            reviewsList.innerHTML = reviews;
+        }
+    });
     
     componentDetail.innerHTML = `
         <div class="component-image">
@@ -172,36 +186,21 @@ function showComponentDetails(component, categoryId) {
                 </button>
                 
                 <div class="component-rating">
-                    <div class="rating-stars">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
+                    <div class="rating-stars" id="componentRating">
                         <i class="fas fa-star-half-alt"></i>
                         <i class="far fa-star"></i>
+                        <i class="far fa-star"></i>
+                        <i class="far fa-star"></i>
+                        <i class="far fa-star"></i>
                     </div>
-                    <span class="rating-count">(12 reviews)</span>
+                    <span class="rating-count" id="reviewCount">(0 reviews)</span>
                 </div>
             </div>
             
             <div class="component-reviews">
                 <h4>Reviews</h4>
                 <div id="reviewsList">
-                    <div class="review-item">
-                        <div class="review-header">
-                            <span class="review-author">John Doe</span>
-                            <span class="review-date">2023-05-15</span>
-                        </div>
-                        <div class="rating-stars">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="far fa-star"></i>
-                        </div>
-                        <div class="review-content">
-                            Great component, works perfectly in my build!
-                        </div>
-                    </div>
+                    ${reviewsHtml}
                 </div>
                 
                 <div class="add-review">
@@ -237,14 +236,28 @@ function showComponentDetails(component, categoryId) {
     
     const selectVendorButtons = document.querySelectorAll('.select-vendor');
     selectVendorButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            const vendorId = button.getAttribute('data-vendor');
-            const vendor = component.vendors.find(v => v.id === vendorId);
-            if (vendor) {
-                addComponentToBuild({...component, selectedVendor: vendor}, categoryId);
-                modal.style.display = 'none';
-            }
-        });
+        if (button.classList.contains('view-marketplace')) {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                const vendorId = button.getAttribute('data-vendor');
+                const vendor = component.vendors.find(v => v.id === vendorId);
+                
+                if (vendor && vendor.listingId) {
+                    modal.style.display = 'none';
+                    viewListing(vendor.listingId);
+                }
+            });
+        } else if (button.tagName === 'A') {
+        } else {
+            button.addEventListener('click', () => {
+                const vendorId = button.getAttribute('data-vendor');
+                const vendor = component.vendors.find(v => v.id === vendorId);
+                if (vendor) {
+                    addComponentToBuild({...component, selectedVendor: vendor}, categoryId);
+                    modal.style.display = 'none';
+                }
+            });
+        }
     });
     
     const reviewForm = document.getElementById('reviewForm');
@@ -256,6 +269,88 @@ function showComponentDetails(component, categoryId) {
             submitReview(component.id, rating, comment);
         });
     });
+}
+
+async function loadComponentReviews(componentId) {
+    try {
+        const reviews = await API.getReviewsForComponent(componentId);
+        
+        if (!reviews || reviews.length === 0) {
+            const componentRating = document.getElementById('componentRating');
+            if (componentRating) {
+                componentRating.innerHTML = `
+                    <i class="far fa-star"></i>
+                    <i class="far fa-star"></i>
+                    <i class="far fa-star"></i>
+                    <i class="far fa-star"></i>
+                    <i class="far fa-star"></i>
+                `;
+            }
+            
+            const reviewCount = document.getElementById('reviewCount');
+            if (reviewCount) {
+                reviewCount.textContent = '(0 reviews)';
+            }
+            
+            return '<p>No reviews yet. Be the first to review!</p>';
+        }
+        
+        let totalRating = 0;
+        reviews.forEach(review => {
+            totalRating += review.rating;
+        });
+        const averageRating = totalRating / reviews.length;
+        
+        const componentRating = document.getElementById('componentRating');
+        if (componentRating) {
+            componentRating.innerHTML = generateStarRating(averageRating);
+        }
+        
+        const reviewCount = document.getElementById('reviewCount');
+        if (reviewCount) {
+            reviewCount.textContent = `(${reviews.length} review${reviews.length !== 1 ? 's' : ''})`;
+        }
+        
+        return reviews.map(review => {
+            const user = API.users.find(u => u.id === review.userId);
+            const username = user ? user.username : 'Anonymous';
+            const date = new Date(review.createdAt).toLocaleDateString();
+            
+            return `
+                <div class="review-item">
+                    <div class="review-header">
+                        <span class="review-author">${username}</span>
+                        <span class="review-date">${date}</span>
+                    </div>
+                    <div class="rating-stars">
+                        ${generateStarRating(review.rating)}
+                    </div>
+                    <div class="review-content">
+                        ${review.comment}
+                    </div>
+                </div>
+            `;
+        }).join('');
+    } catch (error) {
+        console.error('Failed to load reviews:', error);
+        return '<p>Failed to load reviews</p>';
+    }
+}
+
+function generateStarRating(rating) {
+    let starsHtml = '';
+    
+    for (let i = 1; i <= 5; i++) {
+        if (i <= Math.floor(rating)) {
+            starsHtml += '<i class="fas fa-star"></i>';
+        } else if (i - 0.5 <= rating) {
+            starsHtml += '<i class="fas fa-star-half-alt"></i>';
+        } else {
+            starsHtml += '<i class="far fa-star"></i>';
+        }
+    }
+    
+    return starsHtml;
 }
 
 function addComponentToBuild(component, categoryId) {
@@ -275,6 +370,7 @@ function updateBuildList() {
     
     let totalPrice = 0;
     let hasComponents = false;
+    let hasVendorUrls = false;
     
     for (const categoryId in currentBuild.components) {
         const item = currentBuild.components[categoryId];
@@ -287,12 +383,19 @@ function updateBuildList() {
         
         totalPrice += componentPrice;
         
+        if ((item.component.selectedVendor && item.component.selectedVendor.url) || 
+            (item.component.vendors && item.component.vendors.some(v => v.url))) {
+            hasVendorUrls = true;
+        }
+        
         const buildItem = document.createElement('div');
         buildItem.className = 'build-item';
         buildItem.innerHTML = `
             <div class="build-item-info">
                 <h4>${item.component.name}</h4>
                 <div class="build-item-category">${getCategoryName(categoryId)}</div>
+                ${item.component.selectedVendor ? 
+                    `<div class="build-item-vendor">From: ${item.component.selectedVendor.name}</div>` : ''}
             </div>
             <div class="build-item-price">$${componentPrice.toFixed(2)}</div>
             <button class="remove-item" data-category="${categoryId}">
@@ -311,6 +414,7 @@ function updateBuildList() {
     
     document.getElementById('saveBuildBtn').disabled = !hasComponents;
     document.getElementById('shareBuildBtn').disabled = !hasComponents;
+    document.getElementById('purchaseAllBtn').disabled = !hasComponents || !hasVendorUrls;
     
     document.querySelectorAll('.remove-item').forEach(button => {
         button.addEventListener('click', () => {
@@ -399,7 +503,9 @@ function shareBuild() {
         return;
     }
     
-    const shareLink = window.location.origin + '/share?build=' + btoa(JSON.stringify(currentBuild));
+    const shareCode = generateBuildShareCode(currentBuild);
+    
+    const shareLink = window.location.origin + window.location.pathname + '?build=' + shareCode;
     
     const modal = document.getElementById('shareBuildModal');
     document.getElementById('buildShareLink').value = shareLink;
@@ -423,6 +529,57 @@ function shareBuild() {
     document.querySelector('.share-btn.reddit').addEventListener('click', () => {
         window.open(`https://www.reddit.com/submit?url=${encodeURIComponent(shareLink)}&title=${encodeURIComponent('Check out my custom PC build!')}`, '_blank');
     });
+}
+
+function generateBuildShareCode(build) {
+    const simpleBuild = {};
+    
+    for (const categoryId in build.components) {
+        const component = build.components[categoryId].component;
+        simpleBuild[categoryId] = {
+            id: component.id,
+            vendor: component.selectedVendor ? component.selectedVendor.id : null
+        };
+    }
+    
+    return btoa(JSON.stringify(simpleBuild));
+}
+
+function loadBuildFromShareCode(shareCode) {
+    try {
+        const simpleBuild = JSON.parse(atob(shareCode));
+        
+        currentBuild.components = {};
+        
+        const loadPromises = [];
+        
+        for (const categoryId in simpleBuild) {
+            const componentData = simpleBuild[categoryId];
+            
+            loadPromises.push(
+                API.getComponentById(categoryId, componentData.id).then(component => {
+                    if (component) {
+                        if (componentData.vendor && component.vendors) {
+                            const vendor = component.vendors.find(v => v.id === componentData.vendor);
+                            if (vendor) {
+                                component.selectedVendor = vendor;
+                            }
+                        }
+                        
+                        addComponentToBuild(component, categoryId);
+                    }
+                })
+            );
+        }
+        
+        Promise.all(loadPromises).then(() => {
+            showNotification('Build loaded successfully', 'success');
+        });
+        
+    } catch (error) {
+        console.error('Failed to load build from share code:', error);
+        showNotification('Invalid build share code', 'error');
+    }
 }
 
 function setupEventListeners() {
@@ -452,4 +609,55 @@ function setupEventListeners() {
             }
         });
     });
+    
+    window.addEventListener('load', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const buildParam = urlParams.get('build');
+        
+        if (buildParam) {
+            document.querySelector('nav a[data-page="builder"]').click();
+            
+            loadBuildFromShareCode(buildParam);
+        }
+    });
+    
+    const buildActions = document.querySelector('.build-actions');
+    const purchaseButton = document.createElement('button');
+    purchaseButton.id = 'purchaseAllBtn';
+    purchaseButton.innerHTML = '<i class="fas fa-shopping-cart"></i> Purchase All';
+    purchaseButton.disabled = true;
+    buildActions.appendChild(purchaseButton);
+    
+    purchaseButton.addEventListener('click', purchaseAllComponents);
+}
+
+function purchaseAllComponents() {
+    const vendorUrls = [];
+    
+    for (const categoryId in currentBuild.components) {
+        const item = currentBuild.components[categoryId];
+        const component = item.component;
+        
+        if (component.selectedVendor && component.selectedVendor.url) {
+            vendorUrls.push(component.selectedVendor.url);
+        } else if (component.vendors && component.vendors.length > 0) {
+            const vendorWithUrl = component.vendors.find(v => v.url);
+            if (vendorWithUrl) {
+                vendorUrls.push(vendorWithUrl.url);
+            }
+        }
+    }
+    
+    if (vendorUrls.length === 0) {
+        showNotification('No vendor links available for purchase', 'warning');
+        return;
+    }
+    
+    vendorUrls.forEach(url => {
+        if (!url.startsWith('#')) {
+            window.open(url, '_blank');
+        }
+    });
+    
+    showNotification(`Opening ${vendorUrls.length} vendor websites`, 'info');
 }

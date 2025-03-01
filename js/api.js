@@ -9,6 +9,8 @@ class ApiService {
         this.listings = [];
         this.builds = [];
         this.reviews = {};
+        this.userReputations = {};
+        this.chatMessages = [];
     }
 
     async init() {
@@ -20,6 +22,8 @@ class ApiService {
             await this.loadListings();
             await this.loadBuilds();
             await this.loadReviews();
+            await this.loadReputations();
+            await this.loadChatMessages();
             console.log('API initialized with data');
         } catch (error) {
             console.error('API initialization failed:', error);
@@ -92,6 +96,15 @@ class ApiService {
             console.error(`Failed to save file ${path}:`, error);
             throw error;
         }
+    }
+
+    async imageToBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result.split(',')[1]);
+            reader.onerror = error => reject(error);
+        });
     }
 
     async loadCategories() {
@@ -199,18 +212,57 @@ class ApiService {
         return this.reviews;
     }
 
-    async registerUser(username, email, password) {
+    async loadReputations() {
+        const reputations = await this.getFileContent('data/user_reputations.json');
+        this.userReputations = reputations || {};
+        
+        if (!reputations) {
+            await this.saveFileContent('data/user_reputations.json', this.userReputations);
+        }
+        
+        return this.userReputations;
+    }
+
+    async loadChatMessages() {
+        const messages = await this.getFileContent('data/chat_messages.json');
+        this.chatMessages = messages || [];
+        
+        if (!messages) {
+            await this.saveFileContent('data/chat_messages.json', this.chatMessages);
+        }
+        
+        return this.chatMessages;
+    }
+
+    async registerUser(username, email, password, profileImage = null) {
+        let profileImageData = null;
+        if (profileImage) {
+            profileImageData = await this.imageToBase64(profileImage);
+        }
+
         const user = {
             id: Date.now().toString(),
             username,
             email,
             password,
             createdAt: new Date().toISOString(),
-            builds: []
+            builds: [],
+            profileImage: profileImageData ? `profile_${Date.now()}.jpg` : null,
+            profileBanner: null,
+            bio: '',
+            location: '',
+            socialLinks: {}
         };
 
         this.users.push(user);
         await this.saveFileContent('data/users.json', this.users);
+        
+        if (profileImageData) {
+            await this.saveFileContent(`data/images/${user.profileImage}`, {
+                content: profileImageData,
+                encoding: 'base64'
+            });
+        }
         
         const { password: _, ...userWithoutPassword } = user;
         return userWithoutPassword;
@@ -224,6 +276,82 @@ class ApiService {
         
         const { password: _, ...userWithoutPassword } = user;
         return userWithoutPassword;
+    }
+
+    async updateUserProfile(userId, profileData) {
+        const userIndex = this.users.findIndex(u => u.id === userId);
+        if (userIndex === -1) {
+            throw new Error('User not found');
+        }
+
+        const user = this.users[userIndex];
+        
+        user.bio = profileData.bio || user.bio;
+        user.location = profileData.location || user.location;
+        user.socialLinks = profileData.socialLinks || user.socialLinks;
+        
+        if (profileData.profileImage) {
+            const imageData = await this.imageToBase64(profileData.profileImage);
+            const imageName = `profile_${Date.now()}.jpg`;
+            
+            await this.saveFileContent(`data/images/${imageName}`, {
+                content: imageData,
+                encoding: 'base64'
+            });
+            
+            user.profileImage = imageName;
+        }
+        
+        if (profileData.profileBanner) {
+            const bannerData = await this.imageToBase64(profileData.profileBanner);
+            const bannerName = `banner_${Date.now()}.jpg`;
+            
+            await this.saveFileContent(`data/images/${bannerName}`, {
+                content: bannerData,
+                encoding: 'base64'
+            });
+            
+            user.profileBanner = bannerName;
+        }
+        
+        await this.saveFileContent('data/users.json', this.users);
+        
+        const { password: _, ...userWithoutPassword } = user;
+        return userWithoutPassword;
+    }
+
+    async getUserProfile(userId) {
+        const user = this.users.find(u => u.id === userId);
+        if (!user) {
+            throw new Error('User not found');
+        }
+        
+        const reputation = this.getUserReputation(userId);
+        
+        const listings = this.listings.filter(l => l.userId === userId && l.status === 'active');
+        
+        const threads = this.threads.filter(t => t.userId === userId);
+        
+        const builds = this.builds.filter(b => b.userId === userId);
+        
+        const profile = {
+            id: user.id,
+            username: user.username,
+            createdAt: user.createdAt,
+            profileImage: user.profileImage,
+            profileBanner: user.profileBanner,
+            bio: user.bio,
+            location: user.location,
+            socialLinks: user.socialLinks,
+            reputation,
+            stats: {
+                listings: listings.length,
+                threads: threads.length,
+                builds: builds.length
+            }
+        };
+        
+        return profile;
     }
 
     async getComponentsByCategory(categoryId) {
@@ -352,8 +480,34 @@ class ApiService {
         return comment;
     }
 
-    async createListing(userId, categoryId, componentData, price, condition) {
-        const component = await this.addComponent(categoryId, componentData);
+    async createListing(userId, categoryId, componentId, componentData, price, condition, description, images = []) {
+        let componentImages = [];
+        
+        if (images.length > 0) {
+            for (let i = 0; i < images.length; i++) {
+                const imageData = await this.imageToBase64(images[i]);
+                const imageName = `listing_${Date.now()}_${i}.jpg`;
+                
+                await this.saveFileContent(`data/images/${imageName}`, {
+                    content: imageData,
+                    encoding: 'base64'
+                });
+                
+                componentImages.push(imageName);
+            }
+        }
+        
+        let component;
+        if (componentId) {
+            component = await this.getComponentById(categoryId, componentId);
+            if (!component) {
+                throw new Error('Selected component not found');
+            }
+        } else {
+            throw new Error('Component selection is required');
+        }
+        
+        const componentSpecs = component.specs || {};
         
         const listing = {
             id: Date.now().toString(),
@@ -362,12 +516,39 @@ class ApiService {
             componentCategoryId: categoryId,
             price,
             condition,
+            description,
+            images: componentImages,
             createdAt: new Date().toISOString(),
             status: 'active'
         };
 
         this.listings.push(listing);
         await this.saveFileContent('data/marketplace_listings.json', this.listings);
+        
+        if (!component.vendors) {
+            component.vendors = [];
+        }
+        
+        const seller = this.users.find(u => u.id === userId);
+        component.vendors.push({
+            id: `vendor-marketplace-${listing.id}`,
+            name: `${seller ? seller.username : 'Unknown'} (Marketplace)`,
+            price: price,
+            url: `#/marketplace/listing/${listing.id}`,
+            marketplace: true,
+            listingId: listing.id
+        });
+        
+        if (!this.components[categoryId]) {
+            this.components[categoryId] = [];
+        }
+        
+        const componentIndex = this.components[categoryId].findIndex(c => c.id === component.id);
+        if (componentIndex >= 0) {
+            this.components[categoryId][componentIndex] = component;
+        }
+        
+        await this.saveFileContent('data/components.json', this.components);
         
         return { listing, component };
     }
@@ -392,6 +573,163 @@ class ApiService {
     async getUserListings(userId) {
         return this.listings.filter(listing => listing.userId === userId);
     }
+
+    async getAvailableComponents() {
+        const availableComponents = {};
+        
+        for (const categoryId in this.components) {
+            availableComponents[categoryId] = this.components[categoryId].map(comp => ({
+                id: comp.id,
+                name: comp.name,
+                image: comp.image
+            }));
+        }
+        
+        return availableComponents;
+    }
+
+    async addReputation(targetUserId, fromUserId, type, comment) {
+        if (targetUserId === fromUserId) {
+            throw new Error('You cannot rate yourself');
+        }
+        
+        if (!this.userReputations[targetUserId]) {
+            this.userReputations[targetUserId] = {
+                positive: [],
+                negative: []
+            };
+        }
+        
+        const hasRated = 
+            this.userReputations[targetUserId].positive.some(r => r.userId === fromUserId) ||
+            this.userReputations[targetUserId].negative.some(r => r.userId === fromUserId);
+            
+        if (hasRated) {
+            throw new Error('You have already rated this user');
+        }
+        
+        const reputation = {
+            userId: fromUserId,
+            comment,
+            createdAt: new Date().toISOString()
+        };
+        
+        if (type === 'positive') {
+            this.userReputations[targetUserId].positive.push(reputation);
+        } else {
+            this.userReputations[targetUserId].negative.push(reputation);
+        }
+        
+        await this.saveFileContent('data/user_reputations.json', this.userReputations);
+        
+        return this.getUserReputation(targetUserId);
+    }
+    
+    getUserReputation(userId) {
+        if (!this.userReputations[userId]) {
+            return {
+                positive: 0,
+                negative: 0,
+                total: 0,
+                feedbacks: []
+            };
+        }
+        
+        const positive = this.userReputations[userId].positive.length;
+        const negative = this.userReputations[userId].negative.length;
+        
+        const feedbacks = [
+            ...this.userReputations[userId].positive.map(r => ({
+                ...r,
+                type: 'positive',
+                username: this.users.find(u => u.id === r.userId)?.username || 'Unknown User'
+            })),
+            ...this.userReputations[userId].negative.map(r => ({
+                ...r,
+                type: 'negative',
+                username: this.users.find(u => u.id === r.userId)?.username || 'Unknown User'
+            }))
+        ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        
+        return {
+            positive,
+            negative,
+            total: positive - negative,
+            feedbacks
+        };
+    }
+
+    async sendChatMessage(fromUserId, toUserId, message) {
+        const chatMessage = {
+            id: Date.now().toString(),
+            fromUserId,
+            toUserId,
+            message,
+            createdAt: new Date().toISOString(),
+            read: false
+        };
+        
+        this.chatMessages.push(chatMessage);
+        await this.saveFileContent('data/chat_messages.json', this.chatMessages);
+        
+        return chatMessage;
+    }
+    
+    async getUserConversations(userId) {
+        const userMessages = this.chatMessages.filter(
+            m => m.fromUserId === userId || m.toUserId === userId
+        );
+        
+        const conversations = {};
+        userMessages.forEach(msg => {
+            const partnerId = msg.fromUserId === userId ? msg.toUserId : msg.fromUserId;
+            
+            if (!conversations[partnerId]) {
+                const partner = this.users.find(u => u.id === partnerId);
+                conversations[partnerId] = {
+                    userId: partnerId,
+                    username: partner ? partner.username : 'Unknown User',
+                    profileImage: partner ? partner.profileImage : null,
+                    lastMessage: msg,
+                    unread: userId === msg.toUserId && !msg.read ? 1 : 0
+                };
+            } else {
+                if (new Date(msg.createdAt) > new Date(conversations[partnerId].lastMessage.createdAt)) {
+                    conversations[partnerId].lastMessage = msg;
+                }
+                
+                if (userId === msg.toUserId && !msg.read) {
+                    conversations[partnerId].unread++;
+                }
+            }
+        });
+        
+        return Object.values(conversations).sort(
+            (a, b) => new Date(b.lastMessage.createdAt) - new Date(a.lastMessage.createdAt)
+        );
+    }
+    
+    async getConversation(userId, partnerId) {
+        const messages = this.chatMessages.filter(
+            m => (m.fromUserId === userId && m.toUserId === partnerId) || 
+                 (m.fromUserId === partnerId && m.toUserId === userId)
+        ).sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+        
+        let updated = false;
+        messages.forEach(msg => {
+            if (msg.toUserId === userId && !msg.read) {
+                msg.read = true;
+                updated = true;
+            }
+        });
+        
+        if (updated) {
+            await this.saveFileContent('data/chat_messages.json', this.chatMessages);
+        }
+        
+        return messages;
+    }
+
 }
 
 export const API = new ApiService();

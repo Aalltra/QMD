@@ -31,4 +31,3 @@ document.addEventListener('DOMContentLoaded', async () => {
         alert('Failed to load application data. Please try again later.');
     }
 });
-
