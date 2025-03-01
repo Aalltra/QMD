@@ -370,7 +370,6 @@ function updateBuildList() {
     
     let totalPrice = 0;
     let hasComponents = false;
-    let hasVendorUrls = false;
     
     for (const categoryId in currentBuild.components) {
         const item = currentBuild.components[categoryId];
@@ -383,10 +382,13 @@ function updateBuildList() {
         
         totalPrice += componentPrice;
         
-        if ((item.component.selectedVendor && item.component.selectedVendor.url) || 
-            (item.component.vendors && item.component.vendors.some(v => v.url))) {
-            hasVendorUrls = true;
-        }
+        const vendorName = item.component.selectedVendor ? 
+            item.component.selectedVendor.name : 
+            (item.component.vendors && item.component.vendors.length > 0 ? 
+                item.component.vendors[0].name : 'No vendor');
+                
+        const vendorUrl = item.component.selectedVendor && item.component.selectedVendor.url;
+        const isMarketplace = item.component.selectedVendor && item.component.selectedVendor.marketplace;
         
         const buildItem = document.createElement('div');
         buildItem.className = 'build-item';
@@ -394,13 +396,20 @@ function updateBuildList() {
             <div class="build-item-info">
                 <h4>${item.component.name}</h4>
                 <div class="build-item-category">${getCategoryName(categoryId)}</div>
-                ${item.component.selectedVendor ? 
-                    `<div class="build-item-vendor">From: ${item.component.selectedVendor.name}</div>` : ''}
+                <div class="build-item-vendor">From: ${vendorName}</div>
             </div>
             <div class="build-item-price">$${componentPrice.toFixed(2)}</div>
-            <button class="remove-item" data-category="${categoryId}">
-                <i class="fas fa-times"></i>
-            </button>
+            <div class="build-item-actions">
+                ${vendorUrl ? 
+                    `<button class="visit-vendor-btn" data-url="${vendorUrl}" data-marketplace="${isMarketplace}" title="Visit vendor">
+                        <i class="fas fa-external-link-alt"></i>
+                    </button>` : 
+                    ''
+                }
+                <button class="remove-item" data-category="${categoryId}" title="Remove">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
         `;
         
         buildList.appendChild(buildItem);
@@ -414,12 +423,26 @@ function updateBuildList() {
     
     document.getElementById('saveBuildBtn').disabled = !hasComponents;
     document.getElementById('shareBuildBtn').disabled = !hasComponents;
-    document.getElementById('purchaseAllBtn').disabled = !hasComponents || !hasVendorUrls;
+    document.getElementById('purchaseAllBtn').disabled = true;
     
     document.querySelectorAll('.remove-item').forEach(button => {
         button.addEventListener('click', () => {
             const categoryId = button.getAttribute('data-category');
             removeComponentFromBuild(categoryId);
+        });
+    });
+    
+    document.querySelectorAll('.visit-vendor-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            const url = button.getAttribute('data-url');
+            const isMarketplace = button.getAttribute('data-marketplace') === 'true';
+            
+            if (isMarketplace) {
+                const listingId = url.split('/').pop();
+                viewListing(listingId);
+            } else {
+                window.open(url, '_blank');
+            }
         });
     });
     
@@ -475,14 +498,20 @@ async function saveBuild() {
         const buildComponents = {};
         for (const categoryId in currentBuild.components) {
             const item = currentBuild.components[categoryId];
+            const component = item.component;
+            const price = component.selectedVendor ? 
+                component.selectedVendor.price : 
+                (component.vendors && component.vendors.length > 0 ? 
+                    component.vendors[0].price : component.price || 0);
+                    
             buildComponents[categoryId] = {
-                componentId: item.component.id,
-                componentName: item.component.name,
-                vendorId: item.component.selectedVendor ? item.component.selectedVendor.id : null,
-                vendorName: item.component.selectedVendor ? item.component.selectedVendor.name : null,
-                price: item.component.selectedVendor ? 
-                    item.component.selectedVendor.price : 
-                    (item.component.price || 0)
+                componentId: component.id,
+                componentName: component.name,
+                vendorId: component.selectedVendor ? component.selectedVendor.id : 
+                    (component.vendors && component.vendors.length > 0 ? component.vendors[0].id : null),
+                vendorName: component.selectedVendor ? component.selectedVendor.name : 
+                    (component.vendors && component.vendors.length > 0 ? component.vendors[0].name : null),
+                price: price
             };
         }
         
@@ -632,32 +661,48 @@ function setupEventListeners() {
 }
 
 function purchaseAllComponents() {
-    const vendorUrls = [];
-    
-    for (const categoryId in currentBuild.components) {
-        const item = currentBuild.components[categoryId];
-        const component = item.component;
+    showNotification('Please use the individual vendor links for each component', 'info');
+}
+
+async function loadBuild(buildId) {
+    try {
+        const build = await API.getBuildById(buildId);
+        if (!build) {
+            showNotification('Build not found', 'error');
+            return;
+        }
         
-        if (component.selectedVendor && component.selectedVendor.url) {
-            vendorUrls.push(component.selectedVendor.url);
-        } else if (component.vendors && component.vendors.length > 0) {
-            const vendorWithUrl = component.vendors.find(v => v.url);
-            if (vendorWithUrl) {
-                vendorUrls.push(vendorWithUrl.url);
-            }
+        currentBuild.components = {};
+        
+        const loadPromises = [];
+        
+        for (const categoryId in build.components) {
+            const componentData = build.components[categoryId];
+            if (!componentData || !componentData.componentId) continue;
+            
+            loadPromises.push(
+                API.getComponentById(categoryId, componentData.componentId).then(component => {
+                    if (component) {
+                        if (componentData.vendorId && component.vendors) {
+                            const vendor = component.vendors.find(v => v.id === componentData.vendorId);
+                            if (vendor) {
+                                component.selectedVendor = vendor;
+                            }
+                        }
+                        
+                        addComponentToBuild(component, categoryId);
+                    }
+                })
+            );
         }
+        
+        await Promise.all(loadPromises);
+        
+        document.querySelector('nav a[data-page="builder"]').click();
+        
+        showNotification('Build loaded successfully', 'success');
+    } catch (error) {
+        console.error('Failed to load build:', error);
+        showNotification('Failed to load build', 'error');
     }
-    
-    if (vendorUrls.length === 0) {
-        showNotification('No vendor links available for purchase', 'warning');
-        return;
-    }
-    
-    vendorUrls.forEach(url => {
-        if (!url.startsWith('#')) {
-            window.open(url, '_blank');
-        }
-    });
-    
-    showNotification(`Opening ${vendorUrls.length} vendor websites`, 'info');
 }

@@ -75,7 +75,9 @@ function createBuildCard(build) {
     let totalPrice = 0;
     for (const categoryId in build.components) {
         const component = build.components[categoryId];
-        totalPrice += component.price;
+        if (component && component.price) {
+            totalPrice += component.price;
+        }
     }
     
     const createdDate = new Date(build.createdAt).toLocaleDateString('en-US', {
@@ -89,12 +91,14 @@ function createBuildCard(build) {
         const component = build.components[categoryId];
         const categoryName = getCategoryName(categoryId);
         
-        componentsHtml += `
-            <div class="saved-component">
-                <span title="${component.componentName}">${categoryName}</span>
-                <span>$${component.price.toFixed(2)}</span>
-            </div>
-        `;
+        if (component) {
+            componentsHtml += `
+                <div class="saved-component">
+                    <span title="${component.componentName || 'Unknown Component'}">${categoryName}</span>
+                    <span>$${component.price ? component.price.toFixed(2) : '0.00'}</span>
+                </div>
+            `;
+        }
     }
     
     buildCard.innerHTML = `
@@ -146,7 +150,7 @@ function shareBuild(buildId) {
     const modal = document.getElementById('shareBuildModal');
     document.getElementById('buildShareLink').value = shareLink;
     modal.style.display = 'block';
-    
+
     document.getElementById('copyLinkBtn').addEventListener('click', () => {
         const linkInput = document.getElementById('buildShareLink');
         linkInput.select();
@@ -157,7 +161,12 @@ function shareBuild(buildId) {
 
 function deleteBuild(buildId) {
     if (confirm('Are you sure you want to delete this build?')) {
-        showNotification('Build deleted', 'info');
-        loadSavedBuilds();
+        API.deleteBuild(buildId).then(() => {
+            showNotification('Build deleted', 'info');
+            loadSavedBuilds();
+        }).catch(error => {
+            console.error('Failed to delete build:', error);
+            showNotification('Failed to delete build', 'error');
+        });
     }
 }

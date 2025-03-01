@@ -429,6 +429,24 @@ class ApiService {
         return build;
     }
 
+    async deleteBuild(buildId) {
+        const buildIndex = this.builds.findIndex(b => b.id === buildId);
+        if (buildIndex !== -1) {
+            const build = this.builds[buildIndex];
+            
+            const user = this.users.find(u => u.id === build.userId);
+            if (user && user.builds) {
+                user.builds = user.builds.filter(id => id !== buildId);
+                await this.saveFileContent('data/users.json', this.users);
+            }
+            
+            this.builds.splice(buildIndex, 1);
+            await this.saveFileContent('data/saved_builds.json', this.builds);
+            return true;
+        }
+        return false;
+    }
+
     async getUserBuilds(userId) {
         return this.builds.filter(build => build.userId === userId);
     }

@@ -107,16 +107,20 @@ function createListingElement(listing, component) {
         day: 'numeric'
     });
     
+    const imageUrl = listing.images && listing.images.length > 0
+        ? `https://raw.githubusercontent.com/Aalltra/QMDtest/main/data/images/${listing.images[0]}`
+        : (component.image || 'https://via.placeholder.com/200?text=No+Image');
+    
     listingEl.innerHTML = `
         <div class="listing-image">
-            <img src="${component.image || 'https://via.placeholder.com/200?text=No+Image'}" alt="${component.name}">
+            <img src="${imageUrl}" alt="${component.name}">
         </div>
         <div class="listing-details">
             <h3 class="listing-title">${component.name}</h3>
             <div class="listing-price">$${listing.price.toFixed(2)}</div>
             <div class="listing-condition">Condition: ${listing.condition}</div>
             <div class="listing-meta">
-                <span>Seller: ${sellerName}</span>
+                <span>Seller: <a href="#" class="seller-profile-link" data-user-id="${listing.userId}">${sellerName}</a></span>
                 <span>Listed: ${listedDate}</span>
             </div>
             <button class="view-listing-btn" data-listing-id="${listing.id}">View Details</button>
@@ -125,6 +129,12 @@ function createListingElement(listing, component) {
     
     listingEl.querySelector('.view-listing-btn').addEventListener('click', () => {
         viewListing(listing.id);
+    });
+    
+    listingEl.querySelector('.seller-profile-link').addEventListener('click', (e) => {
+        e.preventDefault();
+        const userId = e.target.getAttribute('data-user-id');
+        openUserProfile(userId);
     });
     
     return listingEl;
@@ -145,7 +155,7 @@ function filterListingsByPrice(maxPrice) {
 
 async function viewListing(listingId) {
     try {
-        const result = await API.getListingById(listingId);
+        const result = API.getListingById(listingId);
         if (!result) {
             showNotification('Listing not found', 'error');
             return;
@@ -275,6 +285,7 @@ async function viewListing(listingId) {
             requireAuth(() => {
                 openConversation(listing.userId, sellerName);
                 modal.style.display = 'none';
+                setTimeout(() => modal.remove(), 300);
             });
         });
         
@@ -386,6 +397,18 @@ async function loadComponentOptions(categoryId) {
 
 function openConversation(userId, username) {
     console.log('Opening conversation with', username);
+    requireAuth(() => {
+        openMessagesModal();
+        
+        setTimeout(() => {
+            loadConversation(userId, username);
+            
+            const conversationItem = document.querySelector(`.conversation-item[data-user-id="${userId}"]`);
+            if (conversationItem) {
+                conversationItem.classList.add('active');
+            }
+        }, 100);
+    });
 }
 
 function openUserProfile(userId) {
