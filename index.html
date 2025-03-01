@@ -10,7 +10,7 @@
     <header>
         <div class="container">
             <div class="logo">
-                <h1>PC Builder</h1>
+                <h1>QMD</h1>
             </div>
             <nav>
                 <ul>
@@ -197,6 +197,10 @@
                     <label for="regConfirmPassword">Confirm Password</label>
                     <input type="password" id="regConfirmPassword" required>
                 </div>
+                <div class="form-group">
+                    <label for="regProfileImage">Profile Picture (optional)</label>
+                    <input type="file" id="regProfileImage" accept="image/*">
+                </div>
                 <button type="submit">Register</button>
             </form>
         </div>
@@ -243,12 +247,14 @@
             <h2>Sell an Item</h2>
             <form id="sellItemForm">
                 <div class="form-group">
-                    <label for="itemTitle">Title</label>
-                    <input type="text" id="itemTitle" required>
-                </div>
-                <div class="form-group">
                     <label for="itemCategory">Category</label>
                     <select id="itemCategory" required>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="itemComponent">Component</label>
+                    <select id="itemComponent" required>
+                        <option value="">Select a category first</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -268,6 +274,11 @@
                 <div class="form-group">
                     <label for="itemDescription">Description</label>
                     <textarea id="itemDescription" rows="6" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="itemImages">Images (up to 5)</label>
+                    <input type="file" id="itemImages" accept="image/*" multiple>
+                    <small>First image will be used as the main image</small>
                 </div>
                 <button type="submit">List Item</button>
             </form>
@@ -295,7 +306,7 @@
 
     <footer>
         <div class="container">
-            <p>&copy; 2023 PC Builder. All rights reserved.</p>
+            <p>&copy; 2025 QMD. All rights reserved.</p>
         </div>
     </footer>
 
