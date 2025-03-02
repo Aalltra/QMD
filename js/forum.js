@@ -40,7 +40,7 @@ function setupForumEventListeners() {
             categoryLinks.forEach(l => l.classList.remove('active'));
             link.classList.add('active');
             
-            selectCategory(category);
+            loadForumCategory(category);
         });
     });
     
@@ -120,7 +120,7 @@ function createThreadElement(thread) {
         <div class="thread-header">
             <h3 class="thread-title">${thread.title}</h3>
             <div class="thread-meta">
-                <span>Posted by <a href="#" class="user-profile-link" data-user-id="${thread.userId}">${authorName}</a></span>
+                <span>Posted by ${authorName}</span>
                 <span>${createdDate}</span>
             </div>
         </div>
@@ -133,12 +133,6 @@ function createThreadElement(thread) {
     
     threadEl.querySelector('.view-thread-btn').addEventListener('click', () => {
         viewThread(thread.id);
-    });
-    
-    threadEl.querySelector('.user-profile-link').addEventListener('click', (e) => {
-        e.preventDefault();
-        const userId = e.target.getAttribute('data-user-id');
-        openUserProfile(userId);
     });
     
     return threadEl;
@@ -328,8 +322,6 @@ function setupGeneralChat() {
     generalLink.innerHTML = '<i class="fas fa-comments"></i> General Chat';
     generalLink.classList.add('active');
     
-    generalLink.setAttribute('data-chat-mode', 'true');
-    
     document.querySelectorAll('.forum-categories a').forEach(link => {
         if (link !== generalLink) {
             link.classList.remove('active');
@@ -425,9 +417,7 @@ async function loadGeneralChatMessages() {
             
             messagesHTML += `
                 <div class="chat-message ${isCurrentUser ? 'current-user' : ''}">
-                    <div class="chat-message-user">
-                        <a href="#" class="user-profile-link" data-user-id="${message.userId}">${username}</a>
-                    </div>
+                    <div class="chat-message-user">${username}</div>
                     <div class="chat-message-content">${message.content}</div>
                     <div class="chat-message-time">${new Date(message.createdAt).toLocaleTimeString()}</div>
                 </div>
@@ -435,14 +425,6 @@ async function loadGeneralChatMessages() {
         }
         
         chatMessages.innerHTML = messagesHTML;
-        
-        document.querySelectorAll('.user-profile-link').forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const userId = link.getAttribute('data-user-id');
-                openUserProfile(userId);
-            });
-        });
         
         chatMessages.scrollTop = chatMessages.scrollHeight;
     } catch (error) {
@@ -476,26 +458,5 @@ async function sendGeneralChatMessage(message) {
     } catch (error) {
         console.error('Failed to send chat message:', error);
         showNotification('Failed to send message', 'error');
-    }
-}
-
-function selectCategory(category) {
-    try {
-        const categoryLinks = document.querySelectorAll('.forum-categories a');
-        categoryLinks.forEach(link => link.classList.remove('active'));
-        
-        const selectedLink = document.querySelector(`.forum-categories a[data-category="${category}"]`);
-        selectedLink.classList.add('active');
-        
-        if (category === 'general') {
-            if (selectedLink.hasAttribute('data-chat-mode')) {
-                return;
-            }
-            setupGeneralChat();
-        } else {
-            loadForumCategory(category);
-        }
-    } catch (error) {
-        console.error('Failed to select category:', error);
     }
 }
